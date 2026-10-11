@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kvalitetsregister JEV — RIKS-HIA mapping with Jev</title>
+<style>
+  :root{
+    --bg:#faf9f4; --panel:#fffefb; --border:#e4e1d6; --text:#262822; --muted:#8c8a7c;
+    --accent:#2f6f4f; --accent-soft:#e7f1ea; --good:#2f6f4f; --good-soft:#e7f1ea;
+    --warn:#9a6a00; --warn-soft:#fff6e0; --chip:#f1efe6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,Consolas,monospace;background:var(--bg);color:var(--text);}
+  .layout{display:flex;min-height:100vh;}
+  .sidebar{width:260px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);padding:1.1rem .9rem;}
+  .brand{display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem;}
+  .brand .logo{width:26px;height:26px;border-radius:7px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;}
+  .brand .tag{font-size:.7rem;color:var(--muted);}
+  h1.title{font-size:1.05rem;margin:.3rem 0 1rem;}
+  .section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:1rem 0 .4rem;}
+  .patient-list{list-style:none;margin:0;padding:0;}
+  .patient-item{width:100%;text-align:left;border:1px solid var(--border);background:var(--accent-soft);padding:.65rem .7rem;border-radius:10px;cursor:default;}
+  .patient-card .name{font-size:.88rem;font-weight:700;}
+  .patient-card .meta{font-size:.74rem;color:var(--muted);margin-top:.15rem;}
+  .pill{padding:.08rem .5rem;border-radius:999px;font-size:.65rem;font-weight:700;display:inline-block;margin-top:.4rem;}
+  .pill.ej{background:var(--chip);color:var(--muted);}
+  .pill.klar{background:var(--good-soft);color:var(--good);}
+
+  .main{flex:1;padding:1.3rem 1.6rem;display:flex;flex-direction:column;gap:1rem;overflow-y:auto;}
+  .content-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:1.2rem;align-items:start;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;}
+  .eyebrow{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 .15rem;}
+  .patient-title{font-size:1.1rem;margin:0 0 .15rem;font-weight:700;}
+  .patient-sub{font-size:.8rem;color:var(--muted);margin:0 0 .9rem;}
+
+  .tabs{display:flex;gap:.3rem;border-bottom:1px solid var(--border);margin-bottom:.9rem;}
+  .tab-btn{border:none;background:none;padding:.5rem .8rem;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;}
+  .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+  .day-block{margin-bottom:1rem;}
+  .day-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;}
+  .day-head .vd{background:var(--accent);color:#fff;font-size:.68rem;font-weight:700;padding:.15rem .55rem;border-radius:6px;}
+  .day-head .date{font-size:.74rem;color:var(--muted);font-weight:600;}
+  .note{border-left:2px solid var(--border);padding:.1rem 0 .1rem .7rem;margin-bottom:.6rem;}
+  .note-head{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.2rem;flex-wrap:wrap;}
+  .note-head .ntype{font-weight:700;font-size:.8rem;}
+  .note-head .author{font-size:.72rem;color:var(--muted);}
+  .note-head .time{margin-left:auto;font-size:.7rem;color:var(--muted);}
+  .note p{margin:0;font-size:.82rem;line-height:1.55;white-space:pre-wrap;}
+
+  .lab-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--border);}
+  .lab-row:last-child{border-bottom:none;}
+  .lab-name{font-weight:700;font-size:.82rem;}
+  .lab-sub{font-size:.7rem;color:var(--muted);}
+  .lab-val{font-weight:700;font-size:.86rem;}
+  .lab-val.high{color:#a33;}
+
+  dl.pas{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.45rem 1rem;}
+  dl.pas dt{font-size:.72rem;color:var(--muted);}
+  dl.pas dd{margin:0;font-size:.82rem;font-weight:700;}
+
+  .reg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;gap:.6rem;flex-wrap:wrap;}
+  .reg-actions{display:flex;gap:.5rem;}
+  .btn{border-radius:9px;border:1px solid var(--border);background:#fff;padding:.5rem .85rem;font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;font-family:inherit;}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .banner-ok{display:flex;align-items:center;gap:.5rem;background:var(--good-soft);color:var(--good);border-radius:9px;padding:.5rem .7rem;font-size:.8rem;font-weight:700;margin-bottom:.9rem;}
+  .banner-err{display:flex;align-items:center;gap:.5rem;background:#fbe9e7;color:#9c3b2e;border-radius:9px;padding:.5rem .7rem;font-size:.8rem;font-weight:700;margin-bottom:.9rem;}
+  .empty-hint{font-size:.82rem;color:var(--muted);line-height:1.5;padding:1.5rem 0;}
+
+  .field-section{margin-bottom:1.3rem;}
+  .field-section h3{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;margin:0 0 .5rem;color:var(--muted);font-weight:700;}
+  .field-row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;margin-bottom:.5rem;background:#fff;}
+  .field-row .flabel-col{flex:1 1 150px;min-width:140px;}
+  .field-row .flabel-col .flabel{font-weight:700;font-size:.8rem;display:block;}
+  .field-row .flabel-col .fsource{font-size:.7rem;color:var(--muted);}
+  .field-row .fvalue{flex:2 1 160px;min-width:140px;}
+  .field-row .fvalue input, .field-row .fvalue select{width:100%;border:1px solid var(--border);border-radius:8px;padding:.45rem .55rem;font-family:inherit;font-size:.82rem;background:#fff;color:var(--text);}
+  .field-row .fconf{flex:1 1 110px;min-width:100px;}
+  .field-row .fconf .struct-label{font-size:.72rem;color:var(--muted);}
+  .field-row .fconf .bar-track{width:100%;height:5px;background:var(--chip);border-radius:4px;overflow:hidden;margin-bottom:.3rem;}
+  .field-row .fconf .bar-fill{height:100%;background:var(--accent);border-radius:4px;}
+  .field-row .fconf .conf-label{font-size:.7rem;color:var(--muted);}
+  .field-row .finfo{flex:0 0 18px;color:var(--muted);font-size:.9rem;cursor:help;text-align:center;}
+  .field-row .fcheck{flex:0 0 18px;color:var(--good);font-size:.95rem;text-align:center;}
+  .loading-note{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--muted);padding:1rem 0;}
+  .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .toast{position:fixed;bottom:1.2rem;right:1.2rem;background:#262822;color:#fff;padding:.6rem 1rem;border-radius:10px;font-size:.82rem;box-shadow:0 8px 20px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;max-width:420px;font-family:inherit;}
+  .toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">JEV</div>
+      <span class="tag">Kvalitetsregister</span>
+    </div>
+    <h1 class="title">Kvalitetsregister JEV</h1>
+
+    <div class="section-label">Patienter · demo</div>
+    <ul class="patient-list">
+      <li>
+        <div class="patient-item patient-card">
+          <div class="name">Mikael Dahl</div>
+          <div class="meta">19650511-3390 · man, 61 år</div>
+          <div class="meta">ST-höjningsinfarkt (STEMI), akut PCI LAD</div>
+          <div id="status-pill"></div>
+        </div>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="content-grid">
+      <section class="card" id="source-card">
+        <p class="eyebrow">Journalanteckningar</p>
+        <h2 class="patient-title">Mikael Dahl</h2>
+        <p class="patient-sub">Sahlgrenska universitetssjukhuset · Kardiologkliniken / HIA</p>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="journal">📝 Journal</button>
+          <button class="tab-btn" data-tab="imaging">🩻 Bilddiagnostik</button>
+          <button class="tab-btn" data-tab="labb">🧪 Labb</button>
+          <button class="tab-btn" data-tab="pas">🏥 PAS</button>
+        </div>
+        <div id="tab-journal"></div>
+        <div id="tab-imaging" style="display:none"></div>
+        <div id="tab-labb" style="display:none"></div>
+        <div id="tab-pas" style="display:none"></div>
+      </section>
+
+      <section class="card" id="register-card"></section>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PATIENT = {
+  name: "Mikael Dahl", pnr: "19650511-3390", sex: "M", birth: "1965-05-11", age: 61,
+  height: "180", weight: "88",
+  hospital: "Sahlgrenska universitetssjukhuset", unit: "Kardiologkliniken / HIA",
+  arrival: "2026-09-14 07:05",
+  diagCodes: [
+    "I21.0 — Akut transmural hjärtinfarkt, framvägg",
+    "I10 — Essentiell hypertoni",
+    "Z72.0 — Tobaksbruk"
+  ]
+};
+
+const JOURNAL = [
+  { vd: 1, type: "Ambulansjournal / Inskrivningsanteckning", author: "Akutläkare", time: "2026-09-14 07:10",
+    text: "61-årig man, arbetar heltid som lagerchef. Anamnes på hypertoni sedan ca 5 år, behandlad med enalapril 10 mg x 1. Snusar dagligen sedan ca 20 års ålder, har aldrig använt e-cigaretter. Rökare, ca 20 cigaretter/dygn sedan ca 40 års ålder. Ingen tidigare hjärtinfarkt, PCI, hjärtkirurgi, stroke, förmaksflimmer/-fladder eller kronisk obstruktiv lungsjukdom (KOL). Ingen känd diabetes. Bedöms som vital utan tecken till skörhet (Clinical Frailty Scale motsvarande \"Vital\"). Insjuknade kl 06.20 i hemmet med akut påkommen, central, tryckande bröstsmärta (VAS 8/10) med utstrålning mot vänster arm och käke, åtföljd av kallsvettning och illamående. Patienten larmade själv 112, inget cirkulationsstillestånd och ingen hjärt-lungräddning har krävts prehospitalt. Ambulans på plats 06.45, prehospitalt EKG visade ST-höjning i V2-V5 samt I och aVL, förenligt med akut framväggsinfarkt. Patienten direktlarmades till PCI-jour och transporterades utan fördröjning till kateteriseringslaboratoriet, utan primärt omhändertagande på akutmottagningen; ingen trombolys given prehospitalt. Vid ankomst 07.05 vaken och orienterad, smärtpåverkad (VAS 7/10), perifert varm och torr, auskultatoriskt rena andningsljud bilateralt utan rassel, inga bi- eller blåsljud över hjärtat. Blodtryck 138/86 mmHg, hjärtfrekvens 92/min regelbunden sinusrytm, saturation 97% på rumsluft. Killip klass I, ingen klinisk bild talande för kardiogen chock. Längd 180 cm, vikt 88 kg. Given laddningsdos acetylsalicylsyra 300 mg samt ticagrelor 180 mg peroralt i väntan på intervention, samt fraktionerat heparin intravenöst enligt lokal rutin. Nitroglycerin sublingualt 0,4 mg givet mot kvarstående bröstsmärta." },
+  { vd: 1, type: "Interventionsberättelse (PCI)", author: "Interventionskardiolog", time: "2026-09-14 07:55",
+    text: "Akut koronarangiografi utförd via arteria radialis höger med 6F införare. Diagnostisk angiografi visar normal vänster huvudstam. Proximala och mellersta LCx samt proximala och distala RCA utan angiografiskt signifikanta stenoser (<30%). LAD uppvisar akut total ocklusion i segment 7 (mellersta LAD) med tydlig trombbild, TIMI-flöde 0 före intervention. Ledare passerade ocklusionen utan svårighet. Trombaspiration utfördes med manuell aspirationskateter, måttlig mängd färskt trombmaterial extraherades. Kvarvarande höggradig stenos (ca 90%) med residual trombbörda, varför förbehandling med läkemedelsballong (DEB 2,5 x 20 mm, 8 atm) genomfördes, följt av implantation av ett läkemedelsavgivande stent (DES, 3,0 x 24 mm) i LAD segment 7 med gott angiografiskt resultat. Efterdilatation med non-compliant ballong 3,0 mm vid 18 atm. Slutangiografi visar TIMI 3-flöde, ingen residualstenos, ingen dissektion och inget tecken till distal embolisering eller no-reflow. Ingen mekanisk cirkulatorisk assistans (IABP/ECMO) användes, inga GPIIb/IIIa-hämmare eller bivalirudin gavs. Total kontrastvolym 140 ml, genomlysningstid 11 minuter. Hemostas med radialt kompressionsband. Patienten hemodynamiskt stabil under hela ingreppet och smärtfri efter reperfusion. Överflyttad till HIA för fortsatt postinterventionell övervakning." },
+  { vd: 1, type: "HIA-anteckning", author: "HIA-läkare", time: "2026-09-14 14:30",
+    text: "Patienten smärtfri och cirkulatoriskt stabil post-PCI. Troponin T (högsensitivt) stiger som förväntat efter genomgången STEMI med primär PCI; senaste provet kl 13.50 visar maxvärde 5000 ng/L. Kontinuerlig telemetriövervakning visar sinusrytm 70-85/min utan signifikant ektopi, utan nytillkommet förmaksflimmer och utan AV-blockering. Ingen reinfarkt och ingen blödningskomplikation noterad. Radialisinstick utan hematom eller blödningstecken, god perifer cirkulation i höger hand. Inget behov av mekaniskt cirkulatoriskt stöd, pacemaker eller ICD. Patienten har samtyckt till blodprovstagning för SWEDEHEART-biobank. Insatt sedvanlig sekundärprevention enligt STEMI-vårdprogram: acetylsalicylsyra 75 mg x 1, ticagrelor 90 mg x 2, atorvastatin 80 mg till natten, bisoprolol 2,5 mg x 1 peroralt (upptitreras vid fortsatt stabil hemodynamik) samt ramipril 2,5 mg x 1. Lungröntgen beställd och ekokardiografi planerad till i morgon för bedömning av vänsterkammarfunktion, se bilddiagnostik." },
+  { vd: 2, type: "Daganteckning", author: "HIA-läkare", time: "2026-09-15 09:00",
+    text: "Opåverkad vid morgonrond, smärtfri, ingen dyspné eller yrsel. Telemetri utan arytmi under natten. Inget stresstest är aktuellt då patienten redan genomgått invasiv koronarangiografi med PCI. Lungröntgen och ekokardiografi genomförda under morgonen, se bilddiagnostik för fullständiga utlåtanden; sammanfattningsvis lätt nedsatt systolisk vänsterkammarfunktion med regional hypokinesi anteroseptalt och apikalt, EF ca 45%, utan perikardvätska eller tecken till mekanisk komplikation. Fortsätter insatt läkemedelsbehandling enligt plan, bisoprolol upptitrerat till 5 mg x 1 peroralt då patienten är normotensiv och ej bradykard; inga intravenösa diuretika eller inotropa läkemedel har bedömts nödvändiga. Mobiliseras till sittande och stående under tillsyn av sjukgymnast, väl tolererat. Blodprover inklusive lipidstatus och HbA1c tagna enligt sedvanligt STEMI-protokoll, se labb." },
+  { vd: 3, type: "Daganteckning", author: "Kardiolog", time: "2026-09-16 10:15",
+    text: "Fortsatt stabil, mobiliserad fritt på avdelningen utan bröstsmärta, dyspné eller palpitationer. Dagens EKG visar sinusrytm 68/min, kvarstående men regredierande ST-höjning i V2-V4 samt begynnande Q-våg i V2-V3, förenligt med genomgången transmural framväggsinfarkt, ingen ny arytmi eller AV-blockering under vårdtiden. Rökavvänjningssamtal genomfört av avdelningens sjuksköterska; patienten uttrycker motivation till rökstopp och accepterar nikotinersättningsmedel samt uppföljande kontakt med tobaksavvänjare. Kurator kontaktad för samtalsstöd. Ingen misstanke om pågående eller nyligen genomgången covid-19-infektion, inget test har bedömts nödvändigt. Patienten har enligt uppgift fått årets influensavaccination. Patienten deltar inte i någon pågående forskningsstudie. Plan: utskrivning nästkommande dag vid fortsatt stabilt förlopp, med återbesök till hjärtmottagningen samt uppföljande ekokardiografi om 6-8 veckor för omvärdering av vänsterkammarfunktion." },
+  { vd: 4, type: "Utskrivningsanteckning", author: "Kardiolog", time: "2026-09-17 11:00",
+    text: "61-årig man utskrivs vid liv efter fyra vårddygn för ST-höjningsinfarkt i framväggen (LAD-försörjningsområde), behandlad med akut primär PCI (trombaspiration, läkemedelsballong och läkemedelsavgivande stent i LAD segment 7, TIMI 3 slutflöde). Fyndet vid koronarangiografi, med angiografiskt verifierad aterosklerotisk kulpritlesion och akut trombotisk ocklusion, utesluter MINOCA och spontan kranskärlsdissektion (SCAD). Vårdförloppet okomplicerat och ingen annan allvarlig samtidig sjukdom (t ex cancer eller demens) har bedömts föranleda avsteg från sedvanliga behandlingsriktlinjer. Ekokardiografi har visat lätt nedsatt systolisk vänsterkammarfunktion (EF ca 45%) med regional väggrörelsestörning motsvarande infarktområdet, utan perikardvätska eller mekanisk komplikation. Fullständig revaskularisering uppnåddes vid indexproceduren, ingen kompletterande PCI eller CABG planeras. Diagnoskoder: I21.0 (Akut transmural hjärtinfarkt, framvägg), I10 (Essentiell hypertoni), Z72.0 (Tobaksbruk). Utskrivs smärtfri, cirkulatoriskt stabil och fritt mobiliserad. Utskrivningsläkemedel: acetylsalicylsyra 75 mg x 1 tills vidare, ticagrelor 90 mg x 2 i 12 månader, atorvastatin 80 mg till natten, bisoprolol 5 mg x 1 samt ramipril 2,5 mg x 1 med planerad dosoptimering i öppenvård; ingen digitalis, inga diuretika, kalciumantagonister eller tilläggsbehandling med ezetimib eller andra lipidsänkare bedöms nödvändiga i nuläget. Uppföljning: återbesök till hjärtmottagningen om 4-6 veckor samt kontroll-ekokardiografi om 6-8 veckor. Patienten är informerad om varningssymtom och uppmanad till rökstopp; remiss skickad till tobaksavvänjningsmottagning." }
+];
+
+const IMAGING = [
+  { vd: 1, modality: "Lungröntgen (liggande, mobil)", author: "Radiolog", time: "2026-09-14 08:30",
+    text: "Frontal mobil lungröntgen utförd liggande på HIA. Hjärtstorlek inom normala gränser, kardiothorakal kvot ca 0,48. Inga tecken till pulmonell övercirkulation eller interstitiellt lungödem. Lungfälten fria från infiltrat eller atelektaser. Inga pleuraexsudat. Mediastinum centralt beläget, ej breddökat. Skelettet utan patologiska fynd. Bedömning: Ingen radiologisk hållpunkt för hjärtsvikt eller pulmonell stas." },
+  { vd: 2, modality: "Transthorakal ekokardiografi", author: "Klinisk fysiologi (ultraljudsansvarig kardiolog)", time: "2026-09-15 08:45",
+    text: "Vänster kammare: normal storlek, väggtjocklek inom normalgränser (septum 10 mm, bakvägg 9 mm). Regional hypokinesi noteras anteroseptalt samt i den apikala segmentnivån, motsvarande LAD-försörjt myokard. Global systolisk vänsterkammarfunktion lätt nedsatt, EF biplan enligt Simpsons metod skattad till 45%. Höger kammare: normal storlek och systolisk funktion (TAPSE 21 mm). Förmak: vänster och höger förmak normalstora. Klaffar: mitralisklaffen med lindrig, central insufficiens, i övrigt morfologiskt normala klaffar utan stenos. Perikard: inget patologiskt perikardvätska. Aorta ascendens: normal vidd. Skattat pulmonalistryck inom normalgränser. Sammanfattning: Lätt nedsatt systolisk vänsterkammarfunktion (EF ca 45%) med regional väggrörelsestörning anteroseptalt/apikalt, väl förenligt med genomgången framväggsinfarkt i LAD-försörjningsområdet. Ingen perikardvätska eller mekanisk komplikation efter infarkten." }
+];
+
+const LABB = [
+  { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "vid ankomst", time: "2026-09-14 07:15", value: "45 ng/L" },
+  { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "+3h", time: "2026-09-14 10:10", value: "2200 ng/L", high: true },
+  { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "+7h, maxvärde", time: "2026-09-14 13:50", value: "5000 ng/L", high: true },
+  { vd: 2, name: "Troponin (HS-Troponin-T)", sub: "dag 2, fallande", time: "2026-09-15 09:00", value: "3100 ng/L", high: true },
+  { vd: 1, name: "Glukos", sub: "P-Glukos, vid ankomst", time: "2026-09-14 07:15", value: "7.1 mmol/L" },
+  { vd: 2, name: "CRP", sub: "dag 2", time: "2026-09-15 07:30", value: "32 mg/L" },
+  { vd: 1, name: "Kreatinin", sub: "P-Krea, vid ankomst", time: "2026-09-14 07:15", value: "88 µmol/L" },
+  { vd: 2, name: "Totalkolesterol", sub: "fP-Kolesterol", time: "2026-09-15 07:30", value: "5.8 mmol/L" },
+  { vd: 2, name: "LDL-kolesterol", sub: "fP-LDL, direktmätt", time: "2026-09-15 07:30", value: "3.6 mmol/L" },
+  { vd: 2, name: "HDL-kolesterol", sub: "fP-HDL", time: "2026-09-15 07:30", value: "1.1 mmol/L" },
+  { vd: 2, name: "Triglycerider", sub: "fP-Triglycerider", time: "2026-09-15 07:30", value: "1.8 mmol/L" },
+  { vd: 2, name: "HbA1c", sub: "B-HbA1c", time: "2026-09-15 07:30", value: "38 mmol/mol" },
+  { vd: 1, name: "Hemoglobin", sub: "Hb, vid ankomst", time: "2026-09-14 07:15", value: "142 g/L" }
+];
+
+// mapping status: "ej" | "laddar" | "klar" | fel via mapError — nothing is mapped
+// until "Mappa med Jev" is clicked, and every "ai" field below is filled by a real
+// call to Jev (OpenRouter Decisions API), never guessed client-side.
+const status = { rikshia: "ej" };
+const mappedFields = { rikshia: null };
+const mapError = { rikshia: null };
+
+function fullSourceText(){
+  const journalPart = JOURNAL.map(n => `[Vårddygn ${n.vd}, ${n.type}, ${n.time}] ${n.text}`).join("\n\n");
+  const imagingPart = IMAGING.map(n => `[Vårddygn ${n.vd}, ${n.modality}, ${n.time}] ${n.text}`).join("\n\n");
+  return `JOURNALANTECKNINGAR:\n${journalPart}\n\nBILDDIAGNOSTIK:\n${imagingPart}`;
+}
+
+function structItem(label, varname, source, value){ return { label, varname, source, value, kind: "struct" }; }
+function aiItem(key, label, varname, options){ return { key, label, varname, source: "EHR (Jev)", value: null, conf: null, probs: null, kind: "ai", options }; }
+
+// Built from Variabellista SWEDEHEART 2026, sheet RIKSHIA, grouped by REGSIDA
+// (START_VK / VÅRD / SLUT_VK). Not every one of RIKS-HIA's ~150 clinical variables
+// is included (pure IDs, raw ICD slots beyond the main 3, and a few rarely-used
+// fields are left out), but this covers the register comprehensively. It's normal
+// for some fields to come back "Okänt" with low confidence when the journal
+// genuinely doesn't address them.
+function buildRikshiaSpec(){
+  const troponinValue = LABB
+    .filter(l => /troponin/i.test(l.name))
+    .reduce((max, l) => Math.max(max, parseFloat(l.value) || 0), 0);
+  const lab = name => (LABB.find(l => l.name === name) || {}).value || "Okänt";
+
+  return [
+    { title: "Patient", items: [
+      structItem("Personnummer", "PNR", "PAS", PATIENT.pnr),
+      structItem("Kön", "D_GENDER", "PAS", PATIENT.sex === "M" ? "Man" : "Kvinna"),
+      structItem("Ålder", "—", "PAS", String(PATIENT.age)),
+      structItem("Längd (cm)", "HEIGHT", "PAS", PATIENT.height),
+      structItem("Vikt (kg)", "WEIGHT", "PAS", PATIENT.weight),
+      structItem("Sjukhus / enhet", "CENTREID_IC", "PAS", `${PATIENT.hospital} · ${PATIENT.unit}`)
+    ]},
+    { title: "Anamnes & riskfaktorer", items: [
+      aiItem("rh.occupation", "Sysselsättning", "OCCUPATION_STATUS",
+        ["Arbete","Sjukskrivning/sjukersättning","Arbetslöshet","Ålderspensionär","Studerar/övrigt","Okänt"]),
+      aiItem("rh.smoking", "Rökning", "SMOKING_STATUS", ["Aldrig rökare","Ex-rökare > 1 månad","Rökare","Okänt"]),
+      aiItem("rh.ecig", "Användning av e-cigarett", "E_CIGARETTE_STATUS", ["Aldrig använt","Ex-användare >1 mån","Använder","Okänt"]),
+      aiItem("rh.snus", "Snusning", "SNUS_STATUS", ["Aldrig varit snusare","Ex-snusare >1 mån","Snusare","Okänt"]),
+      aiItem("rh.frailty", "Skörhet", "FRAILTY",
+        ["Mycket vital","Vital","Klarar sig bra","Sårbar","Lindrigt skör","Måttligt skör","Allvarligt skör","Mycket allvarligt skör","Terminalt sjuk","Okänt"]),
+      aiItem("rh.previous_mi", "Tidigare hjärtinfarkt", "PREVIOUS_MI", ["Nej","Ja","Okänt"]),
+      aiItem("rh.history_chf", "Känd nedsatt vänsterkammarfunktion", "HISTORY_OF_CHF",
+        ["Nej","Ja, Normalt (>=50%)","Ja, Lätt nedsatt (40-49%)","Ja, Måttligt nedsatt (30-39%)","Kraftigt nedsatt (<30%)","Ja, men okänd grad","Okänt"]),
+      aiItem("rh.previous_pci", "Tidigare PCI", "PREVIOUS_PCI", ["Nej","Ja","Okänt"]),
+      aiItem("rh.prior_surgery", "Tidigare hjärtkirurgi", "PRIOR_CARDIAC_SURGERY", ["Nej","CABG","Annan hjärtkirurgi","Okänt"]),
+      aiItem("rh.diabetes", "Diabetes", "DIABETES", ["Nej","Ja","Okänt"]),
+      aiItem("rh.hypertension", "Hypertoni", "HYPERTENSION", ["Nej","Ja","Okänt"]),
+      aiItem("rh.previous_stroke", "Tidigare stroke (ej TIA)", "PREVIOUS_STROKE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.previous_afib", "Tidigare förmaksflimmer/-fladder", "PREVIOUS_FF_OR_FFL", ["Nej","Ja","Okänt"]),
+      aiItem("rh.previous_kol", "Tidigare KOL", "PREVIOUS_KOL", ["Nej","Ja","Okänt"])
+    ]},
+    { title: "Läkemedel vid inskrivning", items: [
+      aiItem("rh.ace_reg", "ACE-hämmare", "ACE_INHIBITORS_REG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.arb_reg", "A2-blockerare", "ANGIOTENSIN_II_BLOCK_REG", ["Nej","Ja","ARB+Neprilysin (Valsartan/Sakubitril)","Okänt"]),
+      aiItem("rh.oac_reg", "Antikoagulantia", "ORAL_ANTICOAGULANTS_REG",
+        ["Nej","Waran","Exanta","Dabigatran (Pradaxa)","Rivaroxaban (Xarelto)","Apixaban (Eliquis)","Edoxaban (Lixiana)","Övrigt","Okänt"]),
+      aiItem("rh.antiplatelet_reg", "Övriga trombocythämmare", "OTHER_ANTIPLATELET_REG",
+        ["Nej","Clopidogrel (Plavix)","Tiklopidin (Ticlid)","Prasugrel (Efient)","Ticagrelor (Brilique)","Övrig","Okänt"]),
+      aiItem("rh.asa_reg", "ASA", "ASPIRIN_REG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.bb_reg", "Betablockerare", "BETA_BLOCKERS_REG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.cc_reg", "Ca-hämmare", "CALCIUM_ANTAGONIST_REG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.statin_reg", "Statiner", "STATINS_REG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.diuretic_reg", "Diuretika", "DIURETICS_REG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.nitrate_reg", "Nitroglycerin långverkande", "NITRATES_REG", ["Nej","Ja","Okänt"])
+    ]},
+    { title: "Vid ankomst — status & EKG", items: [
+      aiItem("rh.ecg_rhythm", "EKG rytm", "ECG_RHYTHM", ["Sinus","Förmaksflimmer/-fladder","Övrigt","Okänt"]),
+      aiItem("rh.ecg_qrs", "EKG QRS", "ECG_QRS_ANNOTATION",
+        ["Normalt","Pacemaker","Vänster grenblock","Patol Q-våg","Höger grenblock","Övrigt","Okänt"]),
+      aiItem("rh.ecg_stt", "EKG STT", "ECG_STT_CHANGES", ["Normalt","ST-höjning","ST-sänkning","Patologisk T-våg","Övrigt","Okänt"]),
+      aiItem("rh.rales", "Lungrassel", "PULMONARY_RALES", ["Nej","Basala rassel","Mer än halva lungorna","Lungödem","Okänd"]),
+      aiItem("rh.shock_admission", "Cardiogen chock vid ankomst", "CARDIAC_SHOCK", ["Nej","Ja","Okänt"]),
+      aiItem("rh.presenting_symptoms", "Intagningsorsak", "PRESENTING_SYMPTOMS",
+        ["Bröstsmärta","Dyspne","Cirkulationsstillestånd","Övrigt","Okänt"]),
+      aiItem("rh.ambulance", "Ambulans", "AMBULANCE", ["Nej","Ja till akuten","Ja till HIA/PCI-lab","Okänt"]),
+      aiItem("rh.cpr_before", "HLR före sjukhus", "CPR_BEFORE_HOSPITAL", ["Nej","Ja","Okänt"]),
+      aiItem("rh.thromb_before", "Prehospital trombolys", "THROMB_BEFORE_HOSPITAL", ["Nej","Ja","Okänt"]),
+      aiItem("rh.prehosp_ecg_reper", "Reperfusionsgrundande EKG = Prehospitalt EKG", "PREHOSP_ECG_REPER", ["Nej","Ja","Okänt"])
+    ]},
+    { title: "Reperfusion & läkemedel under vårdtiden", items: [
+      aiItem("rh.repertreatment", "Reperfusionsbehandling", "REPERTREATMENT",
+        ["Nej","Trombolys","Primär PCI","Akut CABG","Akut cor.angio utan åtgärd"]),
+      aiItem("rh.anticoag_treat", "sc/iv Antikoagulantia", "ANTICOAGULANTS", ["Nej","iv Heparin","sc LMWH","Arixtra","Okänt"]),
+      aiItem("rh.bivalirudin", "iv Bivalirudin", "BIVALIRUDIN", ["Nej","Ja","Okänt"]),
+      aiItem("rh.gp_hämmare", "iv Trombocythämmare (GpIIb/IIIa)", "GLYCOPROTEIN_GP_IIIA_IIB",
+        ["Nej","Reopro","Aggrastat","Integrillin","Okänt"]),
+      aiItem("rh.bb_treat", "Betablockerare under vårdtiden", "BETA_BLOCKERS_TREAT", ["Nej","Ja, iv","Ja, per oralt","Okänt"]),
+      aiItem("rh.diuretic_treat", "iv Diuretika", "DIURETICS_TREAT", ["Nej","Ja","Okänt"]),
+      aiItem("rh.inotropes", "iv Inotropa", "INOTROPES", ["Nej","Ja","Okänt"]),
+      aiItem("rh.nitrate_treat", "iv Nitroglycerin", "NITRATES_TREAT", ["Nej","Ja","Okänt"]),
+      aiItem("rh.stresstest", "Typ av stresstest", "TYPE_OF_STRESSTEST", ["Ej utfört","Myocardscint","Stress Eko","Arbetsprov","Okänt"])
+    ]},
+    { title: "Vänsterkammarfunktion & komplikationer", items: [
+      aiItem("rh.ef_obtained_by", "Vänsterkammarfunktion mätt med", "EF_OBTAINED_BY",
+        ["Ej utfört","Ekocardiografi","LV-angio","MR","Annan metod","Okänt"]),
+      aiItem("rh.lvef", "Vänsterkammarfunktion", "LEFT_VENTRICULAR_FUNCTION",
+        ["Normalt (>=50%)","Lätt nedsatt (40-49%)","Måttligt nedsatt (30-39%)","Kraftigt nedsatt (<30%)","Okänt"]),
+      aiItem("rh.cabg", "CABG", "CABG", ["Nej","Ja, akut CABG","Ja, under vårdtillfället","Planerad efter utskrivning"]),
+      aiItem("rh.devices", "PM / ICD", "ELECTRICAL_DEVICES",
+        ["Nej","Pacemaker - permanent","ICD","PM + ICD","CRT","ICD + CRT","Okänt"]),
+      aiItem("rh.cpap", "CPAP/BiPAP/NIV/HFNC", "CPAP", ["Nej","Ja","Okänt"]),
+      aiItem("rh.reinfarct", "Reinfarkt under vårdtillfället", "MYOCARDIAL_REINFARCT_HOSPITAL", ["Nej","Ja","Okänt"]),
+      aiItem("rh.bleeding", "Blödning under vårdtillfället", "BLEEDING_TIMI_HOSPITAL",
+        ["Nej","Dödlig","Cerebral","Krävande op/transfusion","Okänt"]),
+      aiItem("rh.resusc", "HLR/defibrillering vid cirkulationsstillestånd", "RESUSCITATED_CARDIAC_ARREST",
+        ["Nej","VT/VF","Övrigt","Okänt"]),
+      aiItem("rh.shock_hospital", "Cardiogen chock (under vårdtiden)", "CARDIOGENIC_SHOCK", ["Nej","Ja","Okänt"]),
+      aiItem("rh.mech_circ", "Mekaniskt assisterad cirkulation", "MECHANIC_CIRC", ["Nej","IABP","LVAD","ECMO","Övrigt","Okänt"]),
+      aiItem("rh.av_block", "AV-block", "AV_BLOCKAGE", ["Nej / AV-I","AV-II / AV-III","Okänt"]),
+      aiItem("rh.new_afib", "Nytt förmaksflimmer", "NEW_FIBRILLATION_FLUTTER", ["Nej","Ja","Okänt"]),
+      aiItem("rh.mech_comp", "Mekanisk komplikation", "MECHANICAL_COMPLICATION",
+        ["Nej","Fri väggruptur","VSD","Akut allvarlig MI","Okänt"])
+    ]},
+    { title: "Biokemi (labb)", items: [
+      structItem("Infarktmarkör", "BIOCHEMICAL_MARKER_TYPE", "Lab", "HS-Troponin-T (ng)"),
+      structItem("Maxvärde markör", "BIOCHEMICAL_MARKER_VALUE", "Lab", String(troponinValue)),
+      structItem("S-Kreatinin", "S_CREATININ", "Lab", lab("Kreatinin")),
+      structItem("CRP", "CRP", "Lab", lab("CRP")),
+      structItem("Hemoglobin", "HEMOGLOBIN", "Lab", lab("Hemoglobin")),
+      structItem("Kolesterol", "CHOLESTEROL_TOTAL", "Lab", lab("Totalkolesterol")),
+      structItem("Triglycerider", "TRIGLYCERIDES", "Lab", lab("Triglycerider")),
+      structItem("HDL", "HDL_CHOLESTEROL", "Lab", lab("HDL-kolesterol")),
+      structItem("LDL direktmätt", "LDL_CHOLESTEROL_MANDATORY", "Lab", lab("LDL-kolesterol")),
+      structItem("P-Glukos", "B_GLUCOSE", "Lab", lab("Glukos")),
+      structItem("HbA1c", "HBA1CMOL", "Lab", lab("HbA1c"))
+    ]},
+    { title: "Diagnos vid utskrivning", items: [
+      structItem("Diagnoskod 1", "DIAG1", "PAS", PATIENT.diagCodes[0]),
+      structItem("Diagnoskod 2", "DIAG2", "PAS", PATIENT.diagCodes[1]),
+      structItem("Diagnoskod 3", "DIAG3", "PAS", PATIENT.diagCodes[2]),
+      aiItem("rh.infarct_type", "Infarkttyp", "INFARCTTYPE", ["Ej infarkt","STEMI","NSTEMI","Okänt"]),
+      aiItem("rh.infarct_class", "Subklassificering av hjärtinfarkt", "INFARCTCLASSIFICATION",
+        ["Typ-1","Typ-2","Typ-3","Typ-4a","Typ-4b","Typ-5","Okänt"]),
+      aiItem("rh.minoca", "MINOCA", "MINOCA", ["Nej","Ja","Okänt"]),
+      aiItem("rh.scad", "Spontan kranskärlsdissektion (SCAD)", "SCAD", ["Nej","Ja","Okänt"]),
+      aiItem("rh.death", "Avliden", "DEATH", ["Nej","Ja"]),
+      aiItem("rh.other_disease", "Annan allvarlig sjukdom", "OTHER_SERIOUS_DISEASE", ["Nej","Cancer","Demens","Övrigt"])
+    ]},
+    { title: "Utskrivningsläkemedel", items: [
+      aiItem("rh.asa_dc", "ASA", "ASPIRIN_DISCHARGE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.antiplatelet_dc", "Övriga trombocythämmare", "OTHER_ANTIPLATELET_DISCHARGE",
+        ["Nej","Clopidogrel (Plavix)","Tiklopidin (Ticlid)","Prasugrel (Efient)","Ticagrelor (Brilique)","Övrig","Okänt"]),
+      aiItem("rh.statin_dc", "Statiner", "STATINS_DISCHARGE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.bb_dc", "Betablockerare", "BETA_BLOCKERS_DISCHARGE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.ace_dc", "ACE-hämmare", "ACE_INHIBITORS_DISCHARGE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.arb_dc", "A2-blockerare", "ANGIOTENSIN_II_BLOCK_DISCHARGE", ["Nej","Ja","ARB+Neprilysin (Valsartan/Sakubitril)","Okänt"]),
+      aiItem("rh.oac_dc", "Antikoagulantia", "ORAL_ANTICOAGULANTS_DISCHARGE",
+        ["Nej","Waran","Exanta","Dabigatran (Pradaxa)","Rivaroxaban (Xarelto)","Apixaban (Eliquis)","Edoxaban (Lixiana)","Annat","Okänt"]),
+      aiItem("rh.cc_dc", "Ca-hämmare", "CALCIUM_ANTAGONIST_DISCHARGE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.diuretic_dc", "Diuretika", "DIURETICS_DISCHARGE", ["Nej","Ja","Okänt"]),
+      aiItem("rh.nitrate_dc", "Nitroglycerin långverkande", "NITRATES_DISCHARGE", ["Nej","Ja","Okänt"])
+    ]},
+    { title: "Uppföljning & övrigt", items: [
+      aiItem("rh.followup", "Uppföljning", "FOLLOWUP", ["Nej","Kardiologi/Medicin","VC","Annan","Okänt"]),
+      aiItem("rh.planned_angio", "Planerad koronarangiografi efter utskrivningen", "PLANNEDANGIO", ["Nej","Ja","Okänt"]),
+      aiItem("rh.planned_pci", "Planerad PCI efter utskrivningen", "PLANNEDPCI", ["Nej","Ja","Okänt"]),
+      aiItem("rh.planned_cabg", "Planerad CABG efter utskrivningen", "PLANNEDCABG", ["Nej","Ja","Okänt"]),
+      aiItem("rh.trial", "Deltar i studie", "PARTICIPATION_IN_TRIAL", ["Nej","Ja","Okänt"]),
+      aiItem("rh.biobank", "Biobank-samtycke", "BIOBANK_CONSENSUS", ["Nej","Ja","Okänt"]),
+      aiItem("rh.covid_infection", "Covid-19-infektion", "COVID_INFEKTION_DC",
+        ["Nej","Ja, pågående infektion","Misstänkt pågående infektion","Genomgången infektion","Okänt"]),
+      aiItem("rh.covid_test", "Covid-19-test", "COVID_TEST_DC",
+        ["Inte tagit","Negativt test","Positivt test","Taget, men ännu ej svar","Okänt"]),
+      aiItem("rh.flu_vaccine", "Influensavaccination", "INFLUENSAVACCIN",
+        ["Ja","Nej, har avböjt erbjudande om vaccination","Nej, har fått vaccin under pågående influensasäsong","Nej, ej erbjudits influensavaccination","Nej, annan orsak","Okänt"])
+    ]}
+  ];
+}
+
+function collectAiItems(sections){ return sections.flatMap(s => s.items).filter(i => i.kind === "ai"); }
+
+// The one real "Mappa med Jev" call: sends the full source text + the field list to
+// our serverless proxy, which calls Jev (OpenRouter Decisions API) server-side.
+async function mapRegister(){
+  status.rikshia = "laddar";
+  mapError.rikshia = null;
+  renderStatusPill();
+  renderRegister();
+
+  const spec = buildRikshiaSpec();
+  const aiItems = collectAiItems(spec);
+
+  try {
+    const resp = await fetch("/api/map", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        journalText: fullSourceText(),
+        fields: aiItems.map(i => ({ key: i.key, label: `${i.label} (${i.varname})`, options: i.options }))
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || `Jev-anropet misslyckades (HTTP ${resp.status}).`);
+
+    aiItems.forEach(i => {
+      const r = data.results ? data.results[i.key] : null;
+      if (r && typeof r.value === "string") {
+        i.value = r.value;
+        i.conf = Math.max(0, Math.min(100, Math.round(Number(r.confidence) || 0)));
+        i.probs = r.probabilities || null;
+      } else {
+        i.value = "Okänt";
+        i.conf = 0;
+        i.probs = null;
+      }
+    });
+
+    mappedFields.rikshia = spec;
+    status.rikshia = "klar";
+    showToast(`Jev har mappat RIKS-HIA från journal och bilddiagnostik (${aiItems.length} AI-fält).`);
+  } catch (err) {
+    status.rikshia = "ej";
+    mapError.rikshia = err.message;
+    showToast(`Jev-mappning misslyckades: ${err.message}`);
+  }
+
+  renderStatusPill();
+  renderRegister();
+}
+
+function renderStatusPill(){
+  const el = document.getElementById("status-pill");
+  if (status.rikshia === "klar") el.innerHTML = `<span class="pill klar">RIKS-HIA klar</span>`;
+  else el.innerHTML = `<span class="pill ej">ej mappad</span>`;
+}
+
+function renderSource(){
+  const jc = document.getElementById("tab-journal");
+  const days = [...new Set(JOURNAL.map(n => n.vd))];
+  jc.innerHTML = days.map(vd => {
+    const notesForDay = JOURNAL.filter(n => n.vd === vd);
+    const date = notesForDay[0].time.slice(0, 10);
+    const notesHtml = notesForDay.map(n => `
+      <div class="note">
+        <div class="note-head">
+          <span class="ntype">${n.type}</span>
+          <span class="author">· ${n.author}</span>
+          <span class="time">${n.time.slice(11)}</span>
+        </div>
+        <p>${n.text}</p>
+      </div>`).join("");
+    return `
+      <div class="day-block">
+        <div class="day-head"><span class="vd">Vårddygn ${vd}</span><span class="date">${date}</span></div>
+        ${notesHtml}
+      </div>`;
+  }).join("");
+
+  const ic = document.getElementById("tab-imaging");
+  ic.innerHTML = IMAGING.map(n => `
+    <div class="note">
+      <div class="note-head">
+        <span class="ntype">${n.modality}</span>
+        <span class="author">· ${n.author}</span>
+        <span class="time">Vårddygn ${n.vd} · ${n.time}</span>
+      </div>
+      <p>${n.text}</p>
+    </div>`).join("");
+
+  const lc = document.getElementById("tab-labb");
+  lc.innerHTML = LABB.map(l => `
+    <div class="lab-row">
+      <div><div class="lab-name">${l.name}</div><div class="lab-sub">Vårddygn ${l.vd} · ${l.sub} · ${l.time}</div></div>
+      <div class="lab-val ${l.high ? 'high' : ''}">${l.value}</div>
+    </div>`).join("");
+
+  const pc = document.getElementById("tab-pas");
+  pc.innerHTML = `
+    <dl class="pas">
+      <dt>Personnummer</dt><dd>${PATIENT.pnr}</dd>
+      <dt>Kön</dt><dd>${PATIENT.sex}</dd>
+      <dt>Född</dt><dd>${PATIENT.birth}</dd>
+      <dt>Längd</dt><dd>${PATIENT.height} cm</dd>
+      <dt>Vikt</dt><dd>${PATIENT.weight} kg</dd>
+      <dt>Ankomst</dt><dd>${PATIENT.arrival}</dd>
+      <dt>Sjukhus</dt><dd>${PATIENT.hospital}</dd>
+      <dt>Diagnoskoder</dt><dd>${PATIENT.diagCodes.join(", ")}</dd>
+    </dl>`;
+
+  ["journal","imaging","labb","pas"].forEach(t => {
+    document.getElementById(`tab-${t}`).style.display = (t === currentTab) ? "block" : "none";
+  });
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === currentTab));
+}
+
+function probTooltip(it){
+  if (it.kind !== "ai") return "";
+  if (!it.probs) return "Jev returnerade ingen sannolikhetsfördelning för detta fält.";
+  const sorted = Object.entries(it.probs).sort((a, b) => b[1] - a[1]);
+  const lines = sorted.map(([k, v]) => `${k}: ${Math.round(v * 100)}%`);
+  return "Jevs sannolikhetsfördelning över alternativen:\n" + lines.join("\n");
+}
+
+function renderRegister(){
+  const mapped = status.rikshia === "klar";
+  const loading = status.rikshia === "laddar";
+  const card = document.getElementById("register-card");
+
+  let html = `
+    <div class="reg-head">
+      <div>
+        <p class="eyebrow">Registrering i</p>
+        <h2 class="patient-title" style="font-size:1.05rem;">RIKS-HIA</h2>
+      </div>
+      <div class="reg-actions">
+        <button class="btn" id="map-btn" ${loading ? "disabled" : ""}>${mapped ? "↻ Mappa om" : "✨ Mappa till RIKS-HIA"}</button>
+        <button class="btn primary" id="export-btn" ${mapped ? "" : "disabled"}>⬇ Exportera</button>
+      </div>
+    </div>`;
+
+  if (loading) {
+    html += `<div class="loading-note"><span class="spinner"></span> Jev läser journal och bilddiagnostik och mappar till RIKS-HIA…</div>`;
+  } else if (mapError.rikshia) {
+    html += `<div class="banner-err">⚠ ${mapError.rikshia}</div>`;
+    html += `<div class="empty-hint">Klicka <strong>Mappa med Jev</strong> för att försöka igen.</div>`;
+  } else if (!mapped) {
+    html += `<div class="empty-hint">Klicka <strong>Mappa med Jev</strong> för att låta Jev läsa journalen (4 vårddygn) och bilddiagnostiken och fylla i RIKS-HIA-registreringen.</div>`;
+  } else {
+    html += `<div class="banner-ok">✅ Alla fält godkända – redo för export</div>`;
+    mappedFields.rikshia.forEach(sec => {
+      html += `<div class="field-section"><h3>${sec.title}</h3>`;
+      sec.items.forEach(it => {
+        const valueHtml = it.options
+          ? `<select>${it.options.map(o => `<option ${o === it.value ? "selected" : ""}>${o}</option>`).join("")}</select>`
+          : `<input value="${it.value ?? ""}" />`;
+        const confHtml = it.kind === "struct"
+          ? `<span class="struct-label">strukturerad</span>`
+          : `<div class="bar-track"><div class="bar-fill" style="width:${it.conf}%"></div></div><span class="conf-label">${it.conf}% säker</span>`;
+        const infoHtml = it.kind === "ai" ? `<span class="finfo" title="${probTooltip(it).replace(/"/g, '&quot;')}">💬</span>` : `<span class="finfo"></span>`;
+        html += `<div class="field-row">
+          <div class="flabel-col"><span class="flabel">${it.label}</span><span class="fsource">${it.source} · ${it.varname}</span></div>
+          <div class="fvalue">${valueHtml}</div>
+          <div class="fconf">${confHtml}</div>
+          ${infoHtml}
+          <div class="fcheck">✓</div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+  }
+
+  card.innerHTML = html;
+
+  document.getElementById("map-btn").addEventListener("click", mapRegister);
+
+  const exportBtn = document.getElementById("export-btn");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", () => showToast("Exporterat (demo) till RIKS-HIA."));
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+let currentTab = "journal";
+function renderAll(){
+  renderStatusPill();
+  renderSource();
+  renderRegister();
+}
+
+document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => { currentTab = b.dataset.tab; renderSource(); }));
+
+renderAll();
+</script>
+</body>
+</html>

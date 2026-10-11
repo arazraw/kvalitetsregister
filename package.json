@@ -1,0 +1,9 @@
+{
+  "name": "kvalitetsregister",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Lokal demo: RIKS-HIA/SCAAR-mappning med Jev (OpenRouter)",
+  "engines": {
+    "node": ">=18"
+  }
+}
