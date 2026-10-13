@@ -20,7 +20,9 @@
   h1.title{font-size:1.05rem;margin:.3rem 0 1rem;}
   .section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:1rem 0 .4rem;}
   .patient-list{list-style:none;margin:0;padding:0;}
-  .patient-item{width:100%;text-align:left;border:1px solid var(--border);background:var(--accent-soft);padding:.65rem .7rem;border-radius:10px;cursor:default;}
+  .patient-list li+li{margin-top:.5rem;}
+  .patient-item{width:100%;text-align:left;border:1px solid var(--border);background:var(--panel);padding:.65rem .7rem;border-radius:10px;cursor:pointer;font:inherit;color:inherit;}
+  .patient-item.active{background:var(--accent-soft);border-color:var(--accent);}
   .patient-card .name{font-size:.88rem;font-weight:700;}
   .patient-card .meta{font-size:.74rem;color:var(--muted);margin-top:.15rem;}
   .pill{padding:.08rem .5rem;border-radius:999px;font-size:.65rem;font-weight:700;display:inline-block;margin-top:.4rem;}
@@ -102,24 +104,15 @@
     <h1 class="title">Kvalitetsregister JEV</h1>
 
     <div class="section-label">Patienter · demo</div>
-    <ul class="patient-list">
-      <li>
-        <div class="patient-item patient-card">
-          <div class="name">Mikael Dahl</div>
-          <div class="meta">19650511-3390 · man, 61 år</div>
-          <div class="meta">ST-höjningsinfarkt (STEMI), akut PCI LAD</div>
-          <div id="status-pill"></div>
-        </div>
-      </li>
-    </ul>
+    <ul class="patient-list" id="patient-list"></ul>
   </aside>
 
   <main class="main">
     <div class="content-grid">
       <section class="card" id="source-card">
         <p class="eyebrow">Journalanteckningar</p>
-        <h2 class="patient-title">Mikael Dahl</h2>
-        <p class="patient-sub">Sahlgrenska universitetssjukhuset · Kardiologkliniken / HIA</p>
+        <h2 class="patient-title" id="src-name"></h2>
+        <p class="patient-sub" id="src-sub"></p>
         <div class="tabs">
           <button class="tab-btn active" data-tab="journal">📝 Journal</button>
           <button class="tab-btn" data-tab="imaging">🩻 Bilddiagnostik</button>
@@ -140,7 +133,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const PATIENT = {
+const P1_PATIENT = {
   name: "Mikael Dahl", pnr: "19650511-3390", sex: "M", birth: "1965-05-11", age: 61,
   height: "180", weight: "88",
   hospital: "Sahlgrenska universitetssjukhuset", unit: "Kardiologkliniken / HIA",
@@ -152,7 +145,7 @@ const PATIENT = {
   ]
 };
 
-const JOURNAL = [
+const P1_JOURNAL = [
   { vd: 1, type: "Ambulansjournal / Inskrivningsanteckning", author: "Akutläkare", time: "2026-09-14 07:10",
     text: "61-årig man, arbetar heltid som lagerchef. Anamnes på hypertoni sedan ca 5 år, behandlad med enalapril 10 mg x 1. Snusar dagligen sedan ca 20 års ålder, har aldrig använt e-cigaretter. Rökare, ca 20 cigaretter/dygn sedan ca 40 års ålder. Ingen tidigare hjärtinfarkt, PCI, hjärtkirurgi, stroke, förmaksflimmer/-fladder eller kronisk obstruktiv lungsjukdom (KOL). Ingen känd diabetes. Bedöms som vital utan tecken till skörhet (Clinical Frailty Scale motsvarande \"Vital\"). Insjuknade kl 06.20 i hemmet med akut påkommen, central, tryckande bröstsmärta (VAS 8/10) med utstrålning mot vänster arm och käke, åtföljd av kallsvettning och illamående. Patienten larmade själv 112, inget cirkulationsstillestånd och ingen hjärt-lungräddning har krävts prehospitalt. Ambulans på plats 06.45, prehospitalt EKG visade ST-höjning i V2-V5 samt I och aVL, förenligt med akut framväggsinfarkt. Patienten direktlarmades till PCI-jour och transporterades utan fördröjning till kateteriseringslaboratoriet, utan primärt omhändertagande på akutmottagningen; ingen trombolys given prehospitalt. Vid ankomst 07.05 vaken och orienterad, smärtpåverkad (VAS 7/10), perifert varm och torr, auskultatoriskt rena andningsljud bilateralt utan rassel, inga bi- eller blåsljud över hjärtat. Blodtryck 138/86 mmHg, hjärtfrekvens 92/min regelbunden sinusrytm, saturation 97% på rumsluft. Killip klass I, ingen klinisk bild talande för kardiogen chock. Längd 180 cm, vikt 88 kg. Given laddningsdos acetylsalicylsyra 300 mg samt ticagrelor 180 mg peroralt i väntan på intervention, samt fraktionerat heparin intravenöst enligt lokal rutin. Nitroglycerin sublingualt 0,4 mg givet mot kvarstående bröstsmärta." },
   { vd: 1, type: "Interventionsberättelse (PCI)", author: "Interventionskardiolog", time: "2026-09-14 07:55",
@@ -167,14 +160,14 @@ const JOURNAL = [
     text: "61-årig man utskrivs vid liv efter fyra vårddygn för ST-höjningsinfarkt i framväggen (LAD-försörjningsområde), behandlad med akut primär PCI (trombaspiration, läkemedelsballong och läkemedelsavgivande stent i LAD segment 7, TIMI 3 slutflöde). Fyndet vid koronarangiografi, med angiografiskt verifierad aterosklerotisk kulpritlesion och akut trombotisk ocklusion, utesluter MINOCA och spontan kranskärlsdissektion (SCAD). Vårdförloppet okomplicerat och ingen annan allvarlig samtidig sjukdom (t ex cancer eller demens) har bedömts föranleda avsteg från sedvanliga behandlingsriktlinjer. Ekokardiografi har visat lätt nedsatt systolisk vänsterkammarfunktion (EF ca 45%) med regional väggrörelsestörning motsvarande infarktområdet, utan perikardvätska eller mekanisk komplikation. Fullständig revaskularisering uppnåddes vid indexproceduren, ingen kompletterande PCI eller CABG planeras. Diagnoskoder: I21.0 (Akut transmural hjärtinfarkt, framvägg), I10 (Essentiell hypertoni), Z72.0 (Tobaksbruk). Utskrivs smärtfri, cirkulatoriskt stabil och fritt mobiliserad. Utskrivningsläkemedel: acetylsalicylsyra 75 mg x 1 tills vidare, ticagrelor 90 mg x 2 i 12 månader, atorvastatin 80 mg till natten, bisoprolol 5 mg x 1 samt ramipril 2,5 mg x 1 med planerad dosoptimering i öppenvård; ingen digitalis, inga diuretika, kalciumantagonister eller tilläggsbehandling med ezetimib eller andra lipidsänkare bedöms nödvändiga i nuläget. Uppföljning: återbesök till hjärtmottagningen om 4-6 veckor samt kontroll-ekokardiografi om 6-8 veckor. Patienten är informerad om varningssymtom och uppmanad till rökstopp; remiss skickad till tobaksavvänjningsmottagning." }
 ];
 
-const IMAGING = [
+const P1_IMAGING = [
   { vd: 1, modality: "Lungröntgen (liggande, mobil)", author: "Radiolog", time: "2026-09-14 08:30",
     text: "Frontal mobil lungröntgen utförd liggande på HIA. Hjärtstorlek inom normala gränser, kardiothorakal kvot ca 0,48. Inga tecken till pulmonell övercirkulation eller interstitiellt lungödem. Lungfälten fria från infiltrat eller atelektaser. Inga pleuraexsudat. Mediastinum centralt beläget, ej breddökat. Skelettet utan patologiska fynd. Bedömning: Ingen radiologisk hållpunkt för hjärtsvikt eller pulmonell stas." },
   { vd: 2, modality: "Transthorakal ekokardiografi", author: "Klinisk fysiologi (ultraljudsansvarig kardiolog)", time: "2026-09-15 08:45",
     text: "Vänster kammare: normal storlek, väggtjocklek inom normalgränser (septum 10 mm, bakvägg 9 mm). Regional hypokinesi noteras anteroseptalt samt i den apikala segmentnivån, motsvarande LAD-försörjt myokard. Global systolisk vänsterkammarfunktion lätt nedsatt, EF biplan enligt Simpsons metod skattad till 45%. Höger kammare: normal storlek och systolisk funktion (TAPSE 21 mm). Förmak: vänster och höger förmak normalstora. Klaffar: mitralisklaffen med lindrig, central insufficiens, i övrigt morfologiskt normala klaffar utan stenos. Perikard: inget patologiskt perikardvätska. Aorta ascendens: normal vidd. Skattat pulmonalistryck inom normalgränser. Sammanfattning: Lätt nedsatt systolisk vänsterkammarfunktion (EF ca 45%) med regional väggrörelsestörning anteroseptalt/apikalt, väl förenligt med genomgången framväggsinfarkt i LAD-försörjningsområdet. Ingen perikardvätska eller mekanisk komplikation efter infarkten." }
 ];
 
-const LABB = [
+const P1_LABB = [
   { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "vid ankomst", time: "2026-09-14 07:15", value: "45 ng/L" },
   { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "+3h", time: "2026-09-14 10:10", value: "2200 ng/L", high: true },
   { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "+7h, maxvärde", time: "2026-09-14 13:50", value: "5000 ng/L", high: true },
@@ -190,12 +183,95 @@ const LABB = [
   { vd: 1, name: "Hemoglobin", sub: "Hb, vid ankomst", time: "2026-09-14 07:15", value: "142 g/L" }
 ];
 
+const P2_PATIENT = {
+  name: "Birgitta Lindqvist", pnr: "19520308-2468", sex: "K", birth: "1952-03-08", age: 74,
+  height: "164", weight: "74",
+  hospital: "Södra Älvsborgs sjukhus, Borås", unit: "Medicinkliniken / HIA",
+  arrival: "2026-10-02 19:52",
+  diagCodes: [
+    "I21.4 — Akut subendokardiell hjärtinfarkt (NSTEMI)",
+    "I48.0 — Paroxysmalt förmaksflimmer",
+    "E11.9 — Typ 2-diabetes utan komplikationer",
+    "I10 — Essentiell hypertoni"
+  ]
+};
+
+const P2_JOURNAL = [
+  { vd: 1, type: "Akutmottagning — läkaranteckning", author: "Akutläkare", time: "2026-10-02 20:25",
+    text: "Kontaktorsak: Andfåddhet. Anamnes: 74-årig kvinna som inkommer med ambulans till akutmottagningen efter två dygn av tilltagande andfåddhet vid ansträngning, sedan i eftermiddag även andfådd i vila och kan inte ligga plant. Hon beskriver ett diffust tryck över bröstet som kommit och gått sedan i förmiddags, men det dominerande symtomet är andnöden; bröstsmärta förnekas när ambulanspersonalen frågar initialt. Ingen synkope, ingen feber, ingen hosta med missfärgade upphostningar. Ambulans-EKG visar sinusrytm med ST-sänkningar lateralt, inga ST-höjningar; ej STEMI-larm, patienten körs till akutmottagningen. Ingen HLR, ingen prehospital trombolys. Tidigare: Hypertoni sedan 20 år. Typ 2-diabetes sedan 2011, tablettbehandlad. NSTEMI 2018 behandlad med PCI mot höger kranskärl (RCA) på SU/Sahlgrenska, ekokardiografi då med normal vänsterkammarfunktion (EF ca 55 %). TIA 2021 med övergående talsvårigheter, utredd utan kvarstående besvär och utan påvisat förmaksflimmer vid långtids-EKG. Bröstcancer 2010, opererad och strålbehandlad, recidivfri och avslutad onkologisk uppföljning. Ingen känd KOL, ingen känd hjärtsvikt, inget känt förmaksflimmer, ingen tidigare hjärtkirurgi. Socialt: Pensionerad lågstadielärare, gift och bor med maken i villa. Klarar all personlig ADL och sköter hushållet själv, promenerar dagligen men inte i någon högre takt; bedöms som Clinical Frailty Scale 3. Rökte 20 cigaretter per dag fram till 2004, därefter rökfri. Har aldrig snusat och aldrig använt e-cigarett. Aktuella läkemedel enligt läkemedelslistan (stående sedan tidigare): Trombyl 75 mg x1 (sedan 2018), Atorvastatin 40 mg x1, Metoprolol depot 50 mg x1, Losartan 50 mg x1, Amlodipin 5 mg x1, Metformin 1 g x2, Nitroglycerin sublingualspray vid behov (har ej använt senaste året). Inga diuretika, ingen ACE-hämmare, inga antikoagulantia. Status: AT: påverkad av andfåddheten, talar i korta meningar. Andningsfrekvens 26/min, saturation 88 % på luft. Blodtryck 168/94, puls 98 regelbunden. Hjärta: regelbunden rytm, svagt systoliskt blåsljud 2/6 apex. Lungor: bilaterala basala krepitationer upp till nedre tredjedelen av lungfälten. Lätta ankelödem bilateralt. Varm och välperfunderad perifert, inga tecken på chock. EKG på akuten: sinusrytm 96/min, PQ 220 ms, QRS 92 ms utan grenblock och utan patologiska Q-vågor, horisontella ST-sänkningar 1,5–2 mm i V4–V6 samt I och aVL. Inga ST-höjningar. Lab: hs-TnT 38 ng/L, NT-proBNP 3 400 ng/L, P-glukos 11,4. Bedömning: Akut hjärtsvikt (Killip II) med misstänkt NSTE-AKS hos kvinna med känd kranskärlssjukdom. Åtgärder: Syrgas, CPAP startad, furosemid 40 mg iv, nitroglycerininfusion startas. Covid-19 PCR tas på grund av andningssymtom. Ny troponin om 3 timmar. Kontakt med kardiologjour, läggs in på HIA." },
+  { vd: 1, type: "Omvårdnadsanteckning, akutmottagning", author: "Sjuksköterska", time: "2026-10-02 21:15",
+    text: "CPAP med PEEP 7,5 cm H2O startad kl 20:35 enligt läkarordination, patienten tolererar masken väl. Saturation stiger från 88 % till 95 % på 30 minuter. Furosemid 40 mg iv givet kl 20:40, urinkateter ej satt, patienten kastat vatten 600 ml spontant. Nitroglycerininfusion pågår, blodtryck 142/82 kl 21:10. CPAP avvecklad kl 21:45, därefter syrgas 2 l/min på grimma med saturation 94 %. Patienten upplever sig mindre andfådd. Maken på plats och informerad." },
+  { vd: 1, type: "Inskrivningsanteckning HIA", author: "Kardiologjour", time: "2026-10-02 23:40",
+    text: "Övertagen från akutmottagningen, se akutanteckning för anamnes. Ny hs-TnT 3 timmar efter ankomst 212 ng/L, signifikant stegring från 38 ng/L. Covid-19 PCR negativ. Nytt EKG kl 23:15: oförändrade ST-sänkningar V4–V6, sinusrytm. Klinik och troponindynamik talar för NSTEMI, sannolikt typ 1 med tanke på känd kranskärlssjukdom, debut med andfåddhet och ischemiskt EKG. Klinisk hjärtsvikt men nu stabil efter CPAP, diuretika och nitroinfusion, smärtfri, ej i chock. Riskbedömning: hög risk, planeras för koronarangiografi inom 24 timmar, i morgon förmiddag. Patienten står sedan tidigare på Trombyl som fortsätter. Ingen P2Y12-förbehandling innan kranskärlsröntgen. Ingen parenteral antikoagulantia i väntan på angiografi eftersom undersökningen planeras inom 24 timmar. Metoprolol fortsätter per oralt i ordinarie dos. Metformin pausas inför kontrastundersökning. Nitroglycerininfusion får fortsätta under natten." },
+  { vd: 2, type: "Rondanteckning HIA", author: "Kardiolog", time: "2026-10-03 08:20",
+    text: "Lugn natt, nitroinfusionen avslutad kl 05:00. Saturation 95 % på 1 l syrgas. Fortfarande enstaka basala rassel bilateralt men tydligt mindre än vid ankomst. Diures 2,1 liter senaste dygnet. Blodtryck 132/76, puls 78 sinusrytm på telemetri. Morgon-EKG: sinusrytm, nu negativa T-vågor V4–V6 och aVL, ST-sänkningarna har gått i regress, inga Q-vågor. hs-TnT kl 06 486 ng/L (maxvärde hittills). Ekokardiografi utförd i morse, se separat svar: EF ca 45 %, hypokinesi inferolateralt. Plan: koronarangiografi kl 10, ytterligare furosemid 40 mg iv på förmiddagen. Patienten informerad om undersökningen och samtycker." },
+  { vd: 2, type: "Koronarangiografi och PCI", author: "Interventionskardiolog", time: "2026-10-03 11:40",
+    text: "Indikation: NSTEMI med hjärtsvikt. Access: höger arteria radialis, 6F. Heparin 5 000 E iv i början av proceduren. Ticagrelor 180 mg peroralt laddningsdos given på labbet. Inga GP IIb/IIIa-hämmare, ingen bivalirudin. Fynd: Vänsterdominant cirkulation. LM utan signifikanta stenoser. LAD med väggojämnheter, ingen signifikant stenos. LCx: subocklusiv 95 % stenos i proximala delen av första marginalgrenen (OM1) med trombotiskt utseende, TIMI-flöde 2, bedöms som infarktrelaterad lesion. RCA: tidigare stent i mittsegmentet (2018) öppet utan restenos, distalt om stentet 60 % stenos, FFR 0,86 och därmed ej hemodynamiskt signifikant. Åtgärd: PCI av OM1 med predilatation och implantation av ett läkemedelsavgivande stent 3,0 x 22 mm, postdilatation. Slutresultat utan reststenos, TIMI-flöde 3. RCA-stenosen behandlas medicinskt, ingen planerad ytterligare revaskularisering. Hemostas med kompressionsband på höger radialis. Komplikationsfritt. Ordination: fortsatt ASA 75 mg x1 samt ticagrelor 90 mg x2." },
+  { vd: 2, type: "Omvårdnadsanteckning HIA", author: "Sjuksköterska", time: "2026-10-03 21:00",
+    text: "Återkom från PCI-lab kl 12:15. Kompressionsbandet avvecklat enligt rutin kl 15:30, litet ytligt hematom ca 2 x 2 cm vid punktionsstället, mjukt, ingen pågående blödning, ingen åtgärd behövs. Radialispuls palpabel. Smärtfri. Andas lättare, syrgas avslutad kl 17, saturation 94 % på luft. Mobiliserad till stol. Blodsocker 9–12 mmol/L under dagen, insulin enligt korrektionsschema vid behov." },
+  { vd: 3, type: "Rondanteckning HIA", author: "Kardiolog", time: "2026-10-04 09:10",
+    text: "I natt kl 02:15 debuterade förmaksflimmer med snabb kammarrespons 120–135/min, upplevd som hjärtklappning och viss andfåddhet. Inget tidigare känt förmaksflimmer. Metoprolol 5 mg iv givet kl 02:40 med frekvensreglering, därefter spontan konvertering till sinusrytm kl 08:10, total duration ca 6 timmar. Elektrolyter normala, kalium 4,2. Bedömning: Nydebuterat paroxysmalt förmaksflimmer i samband med akut hjärtinfarkt. CHA2DS2-VASc 7 (ålder, kvinna, hypertoni, diabetes, vaskulär sjukdom, tidigare TIA), HAS-BLED 2. Oral antikoagulation indicerad. Efter diskussion med PCI-ansvarig: insättning av apixaban 5 mg x2. Ticagrelor byts till clopidogrel (laddning 300 mg i dag, därefter 75 mg x1). ASA 75 mg fortsätter under en vecka efter PCI och sätts därefter ut, sedan apixaban och clopidogrel i 12 månader. Metoprolol depot höjs till 100 mg x1. Amlodipin pausas på grund av blodtryck 105/62 efter höjd betablockad. Fortsatt furosemid i tablettform 20 mg x1 från i morgon. Kontrollröntgen pulm visar regress av stasen." },
+  { vd: 4, type: "Rondanteckning HIA", author: "Kardiolog", time: "2026-10-05 09:00",
+    text: "Sinusrytm hela dygnet på telemetri, inga nya flimmerepisoder. Inga rassel, inga ankelödem. Blodtryck 124/70, puls 64. Vikt 71,8 kg (från 74 kg vid ankomst). Kreatinin 98. Metformin återinsatt. Lipider: LDL 2,2 mmol/L trots atorvastatin 40 mg, dosen höjs till atorvastatin 80 mg x1 med mål LDL under 1,4. HbA1c 62 mmol/mol, diabetessjuksköterska kontaktad för översyn av diabetesbehandlingen i primärvården. Patienten har efter skriftlig och muntlig information tackat ja till att inkluderas i den registerbaserade randomiserade studie som pågår på kliniken. Hon avböjer däremot att lämna blodprov till biobanken. Erbjuden säsongens influensavaccin under vårdtiden, men avböjer vaccination." },
+  { vd: 4, type: "Fysioterapeut", author: "Fysioterapeut", time: "2026-10-05 14:00",
+    text: "Mobilisering i korridor 2 x 100 meter utan andfåddhet eller bröstsmärta, puls 82 och saturation 96 % efter gång. Går utan hjälpmedel. Information om fysisk aktivitet efter hjärtinfarkt. Remiss till hjärtrehabilitering med fysisk träning i grupp." },
+  { vd: 5, type: "Utskrivningsanteckning", author: "Kardiolog", time: "2026-10-06 11:30",
+    text: "74-årig kvinna med känd kranskärlssjukdom (NSTEMI och PCI RCA 2018), hypertoni och typ 2-diabetes som inkom med akut hjärtsvikt och ischemiska ST-sänkningar. Diagnos: Akut hjärtinfarkt utan ST-höjning (NSTEMI), typ 1, med infarktrelaterad trombotisk stenos i OM1 som behandlades med PCI och ett läkemedelsavgivande stent dag 2. Vänsterkammarfunktion lätt nedsatt, EF 45 % på ekokardiografi. Komplicerat förlopp med akut hjärtsvikt Killip II vid ankomst, behandlad med CPAP, iv furosemid och nitroinfusion, samt nydebuterat paroxysmalt förmaksflimmer vårddygn 3 som konverterade spontant. Ingen kardiogen chock, ingen reinfarkt, ingen blödningskomplikation, inget AV-block utöver AV-block I (PQ 220 ms). Läkemedel vid utskrivning: Trombyl 75 mg x1 till och med 2026-10-10, därefter utsättes. Clopidogrel 75 mg x1 i 12 månader. Eliquis (apixaban) 5 mg x2, tills vidare. Atorvastatin 80 mg x1. Metoprolol depot 100 mg x1. Losartan 50 mg x1. Furosemid 20 mg x1. Metformin 1 g x2. Nitroglycerin sublingualspray vid behov. Amlodipin utsatt. Uppföljning: sjuksköterskebesök på hjärtmottagningen om 2 veckor, läkarbesök på kardiologmottagningen om 6–8 veckor med kontroll av lipider och ny ekokardiografi om 3 månader. Ingen planerad ytterligare koronarangiografi, PCI eller CABG. Patienten går hem till maken i gott skick." }
+];
+
+const P2_IMAGING = [
+  { vd: 1, modality: "Lungröntgen (stående, frontal och sido)", author: "Radiolog", time: "2026-10-02 21:30",
+    text: "Lätt förstorad hjärtsiluett, kardiothorakal kvot 0,56. Kärlomfördelning till ovanfälten och interstitiella förändringar basalt bilateralt med Kerley B-linjer, förenligt med lungstas. Mindre bilaterala pleuravätskor, något mer på höger sida. Inga lobära infiltrat. Inget pneumothorax. Sternum intakt, inga metallsuturer. Bedömning: Lungstas med små pleuravätskor bilateralt." },
+  { vd: 2, modality: "Transthorakal ekokardiografi", author: "Klinisk fysiologi (ultraljudsansvarig kardiolog)", time: "2026-10-03 07:50",
+    text: "Vänster kammare: normal storlek (LVEDD 52 mm), lätt koncentrisk hypertrofi (septum 12 mm). Regional hypokinesi inferolateralt basalt och mittventrikulärt, övriga segment med normal kontraktion. Global systolisk funktion lätt nedsatt, EF beräknad enligt Simpson biplan till 45 %. GLS -14 %. Diastolisk dysfunktion grad 2 med förhöjda fyllnadstryck (E/e' 16). Vänster förmak lätt dilaterat. Mitralis: lätt mitralisinsufficiens, ingen papillarmuskelruptur. Aortaklaff trikuspid med lätt skleros utan stenos. Höger kammare normal storlek och funktion (TAPSE 21 mm). Uppskattat systoliskt tryck i lungartären 42 mmHg. Vena cava inferior 19 mm med nedsatt andningsvariation. Ingen perikardvätska. Ingen VSD. Jämfört med undersökning 2018 (EF ca 55 %) har vänsterkammarfunktionen försämrats." },
+  { vd: 3, modality: "Lungröntgen, kontroll (stående frontal)", author: "Radiolog", time: "2026-10-04 10:30",
+    text: "Jämfört med 2026-10-02: tydlig regress av lungstasen, Kerley B-linjerna har försvunnit. Kvarstående obetydlig pleuravätska höger sinus. Hjärtstorlek oförändrad, kardiothorakal kvot 0,54. Inga infiltrat." }
+];
+
+const P2_LABB = [
+  { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "vid ankomst", time: "2026-10-02 19:58", value: "38 ng/L", high: true },
+  { vd: 1, name: "Troponin (HS-Troponin-T)", sub: "+3h", time: "2026-10-02 22:55", value: "212 ng/L", high: true },
+  { vd: 2, name: "Troponin (HS-Troponin-T)", sub: "dag 2, maxvärde", time: "2026-10-03 06:00", value: "486 ng/L", high: true },
+  { vd: 3, name: "Troponin (HS-Troponin-T)", sub: "dag 3, fallande", time: "2026-10-04 06:00", value: "410 ng/L", high: true },
+  { vd: 1, name: "NT-proBNP", sub: "vid ankomst", time: "2026-10-02 19:58", value: "3400 ng/L", high: true },
+  { vd: 1, name: "Glukos", sub: "P-Glukos, vid ankomst", time: "2026-10-02 19:58", value: "11.4 mmol/L", high: true },
+  { vd: 1, name: "Kreatinin", sub: "P-Krea, vid ankomst", time: "2026-10-02 19:58", value: "104 µmol/L" },
+  { vd: 4, name: "Kreatinin", sub: "P-Krea, dag 4", time: "2026-10-05 06:30", value: "98 µmol/L" },
+  { vd: 1, name: "Kalium", sub: "P-Kalium, vid ankomst", time: "2026-10-02 19:58", value: "4.0 mmol/L" },
+  { vd: 1, name: "CRP", sub: "vid ankomst", time: "2026-10-02 19:58", value: "6 mg/L" },
+  { vd: 1, name: "Hemoglobin", sub: "Hb, vid ankomst", time: "2026-10-02 19:58", value: "124 g/L" },
+  { vd: 2, name: "Totalkolesterol", sub: "fP-Kolesterol", time: "2026-10-03 06:00", value: "4.1 mmol/L" },
+  { vd: 2, name: "LDL-kolesterol", sub: "fP-LDL, direktmätt", time: "2026-10-03 06:00", value: "2.2 mmol/L", high: true },
+  { vd: 2, name: "HDL-kolesterol", sub: "fP-HDL", time: "2026-10-03 06:00", value: "1.2 mmol/L" },
+  { vd: 2, name: "Triglycerider", sub: "fP-Triglycerider", time: "2026-10-03 06:00", value: "2.1 mmol/L", high: true },
+  { vd: 2, name: "HbA1c", sub: "B-HbA1c", time: "2026-10-03 06:00", value: "62 mmol/mol", high: true }
+];
+
+const PATIENTS = [
+  { id: "dahl", summary: "ST-höjningsinfarkt (STEMI), akut PCI LAD",
+    patient: P1_PATIENT, journal: P1_JOURNAL, imaging: P1_IMAGING, labb: P1_LABB },
+  { id: "lindqvist", summary: "Icke ST-höjningsinfarkt (NSTEMI), PCI OM1",
+    patient: P2_PATIENT, journal: P2_JOURNAL, imaging: P2_IMAGING, labb: P2_LABB }
+];
+
+
 // mapping status: "ej" | "laddar" | "klar" | fel via mapError — nothing is mapped
 // until "Mappa med Jev" is clicked, and every "ai" field below is filled by a real
 // call to Jev (OpenRouter Decisions API), never guessed client-side.
-const status = { rikshia: "ej" };
-const mappedFields = { rikshia: null };
-const mapError = { rikshia: null };
+// All per-patient state is keyed by patient id.
+const status = {};
+const mappedFields = {};
+const mapError = {};
+PATIENTS.forEach(p => { status[p.id] = "ej"; mappedFields[p.id] = null; mapError[p.id] = null; });
+
+let currentId = PATIENTS[0].id;
+let PATIENT, JOURNAL, IMAGING, LABB;
+function selectPatient(id){
+  const c = PATIENTS.find(p => p.id === id);
+  currentId = c.id;
+  PATIENT = c.patient; JOURNAL = c.journal; IMAGING = c.imaging; LABB = c.labb;
+}
+selectPatient(currentId);
 
 function fullSourceText(){
   const journalPart = JOURNAL.map(n => `[Vårddygn ${n.vd}, ${n.type}, ${n.time}] ${n.text}`).join("\n\n");
@@ -386,9 +462,10 @@ function collectAiItems(sections){
 // The one real "Mappa med Jev" call: sends the full source text + the field list to
 // our serverless proxy, which calls Jev (OpenRouter Decisions API) server-side.
 async function mapRegister(){
-  status.rikshia = "laddar";
-  mapError.rikshia = null;
-  renderStatusPill();
+  const id = currentId;
+  status[id] = "laddar";
+  mapError[id] = null;
+  renderPatientList();
   renderRegister();
 
   const spec = buildRikshiaSpec();
@@ -419,26 +496,44 @@ async function mapRegister(){
       }
     });
 
-    mappedFields.rikshia = spec;
-    status.rikshia = "klar";
+    mappedFields[id] = spec;
+    status[id] = "klar";
     showToast(`Jev har mappat RIKS-HIA från journal och bilddiagnostik (${aiItems.length} AI-fält).`);
   } catch (err) {
-    status.rikshia = "ej";
-    mapError.rikshia = err.message;
+    status[id] = "ej";
+    mapError[id] = err.message;
     showToast(`Jev-mappning misslyckades: ${err.message}`);
   }
 
-  renderStatusPill();
-  renderRegister();
+  renderPatientList();
+  if (id === currentId) renderRegister();
 }
 
-function renderStatusPill(){
-  const el = document.getElementById("status-pill");
-  if (status.rikshia === "klar") el.innerHTML = `<span class="pill klar">RIKS-HIA klar</span>`;
-  else el.innerHTML = `<span class="pill ej">ej mappad</span>`;
+function renderPatientList(){
+  const ul = document.getElementById("patient-list");
+  ul.innerHTML = PATIENTS.map(c => {
+    const p = c.patient;
+    const pill = status[c.id] === "klar" ? `<span class="pill klar">RIKS-HIA klar</span>`
+      : status[c.id] === "laddar" ? `<span class="pill ej">mappar…</span>`
+      : `<span class="pill ej">ej mappad</span>`;
+    return `<li><button class="patient-item patient-card ${c.id === currentId ? "active" : ""}" data-id="${c.id}">
+      <div class="name">${p.name}</div>
+      <div class="meta">${p.pnr} · ${p.sex === "M" ? "man" : "kvinna"}, ${p.age} år</div>
+      <div class="meta">${c.summary}</div>
+      ${pill}
+    </button></li>`;
+  }).join("");
+  ul.querySelectorAll(".patient-item").forEach(b => b.addEventListener("click", () => {
+    if (b.dataset.id === currentId) return;
+    selectPatient(b.dataset.id);
+    currentTab = "journal";
+    renderAll();
+  }));
 }
 
 function renderSource(){
+  document.getElementById("src-name").textContent = PATIENT.name;
+  document.getElementById("src-sub").textContent = `${PATIENT.hospital} · ${PATIENT.unit}`;
   const jc = document.getElementById("tab-journal");
   const days = [...new Set(JOURNAL.map(n => n.vd))];
   jc.innerHTML = days.map(vd => {
@@ -506,8 +601,8 @@ function probTooltip(it){
 }
 
 function renderRegister(){
-  const mapped = status.rikshia === "klar";
-  const loading = status.rikshia === "laddar";
+  const mapped = status[currentId] === "klar";
+  const loading = status[currentId] === "laddar";
   const card = document.getElementById("register-card");
 
   let html = `
@@ -524,14 +619,14 @@ function renderRegister(){
 
   if (loading) {
     html += `<div class="loading-note"><span class="spinner"></span> Jev läser journal och bilddiagnostik och mappar till RIKS-HIA…</div>`;
-  } else if (mapError.rikshia) {
-    html += `<div class="banner-err">⚠ ${mapError.rikshia}</div>`;
+  } else if (mapError[currentId]) {
+    html += `<div class="banner-err">⚠ ${mapError[currentId]}</div>`;
     html += `<div class="empty-hint">Klicka <strong>Mappa med Jev</strong> för att försöka igen.</div>`;
   } else if (!mapped) {
-    html += `<div class="empty-hint">Klicka <strong>Mappa med Jev</strong> för att låta Jev läsa journalen (4 vårddygn) och bilddiagnostiken och fylla i RIKS-HIA-registreringen.</div>`;
+    html += `<div class="empty-hint">Klicka <strong>Mappa med Jev</strong> för att låta Jev läsa journalen (${new Set(JOURNAL.map(n => n.vd)).size} vårddygn) och bilddiagnostiken och fylla i RIKS-HIA-registreringen.</div>`;
   } else {
     html += `<div class="banner-ok">✅ Alla fält godkända – redo för export</div>`;
-    mappedFields.rikshia.forEach(sec => {
+    mappedFields[currentId].forEach(sec => {
       html += `<div class="field-section"><h3>${sec.title}</h3>`;
       sec.items.forEach(it => {
         const valueHtml = it.options
@@ -574,7 +669,7 @@ function showToast(msg){
 
 let currentTab = "journal";
 function renderAll(){
-  renderStatusPill();
+  renderPatientList();
   renderSource();
   renderRegister();
 }
