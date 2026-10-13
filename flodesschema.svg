@@ -1,152 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
   <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#555"/>
-    </marker>
-    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#2f6f4f"/>
-    </marker>
-    <marker id="arrow-warn" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#9a6a00"/>
-    </marker>
-    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#2f6f4f"/>
-      <stop offset="100%" stop-color="#4a9a6e"/>
-    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#555"/></marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2f6f4f"/></marker>
+    <marker id="arrow-warn" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9a6a00"/></marker>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#2f6f4f"/><stop offset="100%" stop-color="#4a9a6e"/></linearGradient>
   </defs>
+  <rect width="1200" height="820" fill="#faf9f4"/>
 
-  <!-- Bakgrund -->
-  <rect width="1200" height="900" fill="#faf9f4"/>
-
-  <!-- ===== RAD 1: Informationskällor ===== -->
+  <!-- Informationskällor -->
   <text x="600" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#555">INFORMATIONSKÄLLOR</text>
+  <rect x="90" y="45" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="180" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Journal</text>
+  <line x1="180" y1="85" x2="180" y2="128" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <rect x="120" y="132" width="120" height="34" rx="6" fill="#f1efe6" stroke="#e4e1d6"/>
+  <text x="180" y="154" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Text</text>
+  <line x1="180" y1="166" x2="180" y2="196" stroke="#555" stroke-width="1"/>
+  <rect x="300" y="45" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="390" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Labprover</text>
+  <line x1="390" y1="85" x2="390" y2="128" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <rect x="330" y="132" width="120" height="34" rx="6" fill="#f1efe6" stroke="#e4e1d6"/>
+  <text x="390" y="154" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Tabeller</text>
+  <line x1="390" y1="166" x2="390" y2="196" stroke="#555" stroke-width="1"/>
+  <rect x="510" y="45" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="600" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Röntgen / Bild</text>
+  <line x1="600" y1="85" x2="600" y2="128" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <rect x="540" y="132" width="120" height="34" rx="6" fill="#f1efe6" stroke="#e4e1d6"/>
+  <text x="600" y="154" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Text</text>
+  <line x1="600" y1="166" x2="600" y2="196" stroke="#555" stroke-width="1"/>
+  <rect x="720" y="45" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="810" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Patientmetadata</text>
+  <line x1="810" y1="85" x2="810" y2="128" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <rect x="750" y="132" width="120" height="34" rx="6" fill="#f1efe6" stroke="#e4e1d6"/>
+  <text x="810" y="154" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Text</text>
+  <line x1="810" y1="166" x2="810" y2="196" stroke="#555" stroke-width="1"/>
+  <rect x="930" y="45" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="1020" y="70" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Läkemedel</text>
+  <line x1="1020" y1="85" x2="1020" y2="128" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <rect x="960" y="132" width="120" height="34" rx="6" fill="#f1efe6" stroke="#e4e1d6"/>
+  <text x="1020" y="154" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Tabeller</text>
+  <line x1="1020" y1="166" x2="1020" y2="196" stroke="#555" stroke-width="1"/>
+  <text x="22" y="153" font-size="9" font-weight="700" fill="#8c8a7c">BEARBETAS SOM</text>
+  <line x1="180" y1="196" x2="1020" y2="196" stroke="#555" stroke-width="1.2"/>
+  <line x1="600" y1="196" x2="600" y2="238" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <rect x="30" y="50" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="120" y="75" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Journal</text>
+  <!-- JEV + LLM, alltid tillsammans -->
+  <rect x="230" y="242" width="740" height="150" rx="14" fill="#f3f8f4" stroke="#2f6f4f" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="600" y="264" text-anchor="middle" font-size="11" font-weight="700" fill="#2f6f4f">JEV + LLM — ARBETAR ALLTID TILLSAMMANS</text>
 
-  <rect x="240" y="50" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="330" y="75" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Labprover</text>
+  <rect x="260" y="276" width="270" height="80" rx="12" fill="url(#headerGrad)" stroke="#2f6f4f" stroke-width="2"/>
+  <text x="395" y="306" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">JEV — Mappning</text>
+  <text x="395" y="326" text-anchor="middle" font-size="9.5" fill="#e7f1ea">Avgör registertillhörighet · väljer svar</text>
+  <text x="395" y="341" text-anchor="middle" font-size="9.5" fill="#e7f1ea">per variabel med konfidens</text>
 
-  <rect x="450" y="50" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="540" y="75" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Röntgen / Bild</text>
+  <rect x="670" y="276" width="270" height="80" rx="12" fill="#fff" stroke="#9a6a00" stroke-width="2"/>
+  <text x="805" y="306" text-anchor="middle" font-size="15" font-weight="700" fill="#262822">LLM — Granskning</text>
+  <text x="805" y="326" text-anchor="middle" font-size="9.5" fill="#8c8a7c">Nemotron · Gemma</text>
+  <text x="805" y="341" text-anchor="middle" font-size="9.5" fill="#8c8a7c">Granskar JEV:s svar mot journalen</text>
 
-  <rect x="660" y="50" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="750" y="75" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Patientmetadata</text>
+  <line x1="530" y1="303" x2="666" y2="303" stroke="#2f6f4f" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+  <text x="600" y="296" text-anchor="middle" font-size="8.5" fill="#2f6f4f">svar + konfidens</text>
+  <line x1="670" y1="331" x2="534" y2="331" stroke="#9a6a00" stroke-width="1.5" marker-end="url(#arrow-warn)"/>
+  <text x="600" y="347" text-anchor="middle" font-size="8.5" fill="#9a6a00">bekräftar / invänder</text>
 
-  <rect x="870" y="50" width="180" height="40" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="960" y="75" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">Läkemedel</text>
+  <text x="600" y="380" text-anchor="middle" font-size="10" font-weight="700" fill="#2f6f4f">LLM granskar varje variabel — oavsett hur säker JEV är</text>
 
-  <!-- Pilar från rad 1 till rad 2 -->
-  <line x1="120" y1="90" x2="120" y2="135" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-  <line x1="330" y1="90" x2="330" y2="135" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-  <line x1="540" y1="90" x2="540" y2="135" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-  <line x1="750" y1="90" x2="750" y2="135" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-  <line x1="960" y1="90" x2="960" y2="135" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="600" y1="392" x2="600" y2="428" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- ===== RAD 2: Bearbetningsformat ===== -->
-  <text x="600" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">BEARBETAS SOM</text>
+  <!-- Preliminär registrering -->
+  <text x="612" y="415" font-size="10" font-weight="700" fill="#8c8a7c">PRELIMINÄR REGISTRERING</text>
+  <rect x="420" y="432" width="360" height="58" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="600" y="456" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">RIKS-HIA</text>
+  <text x="600" y="476" text-anchor="middle" font-size="9" fill="#8c8a7c">JEV:s svar + LLM:s granskning för varje variabel</text>
 
-  <rect x="60" y="140" width="120" height="36" rx="6" fill="#f1efe6" stroke="#e4e1d6" stroke-width="1"/>
-  <text x="120" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Text</text>
+  <line x1="600" y1="490" x2="600" y2="526" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
 
-  <rect x="270" y="140" width="120" height="36" rx="6" fill="#f1efe6" stroke="#e4e1d6" stroke-width="1"/>
-  <text x="330" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Tabeller</text>
+  <rect x="420" y="530" width="360" height="52" rx="8" fill="#2f6f4f" stroke="#1e5a3a" stroke-width="1.5"/>
+  <text x="600" y="552" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Databas</text>
+  <text x="600" y="569" text-anchor="middle" font-size="9" fill="#e7f1ea">Registreringen flaggas "Klar för granskning"</text>
 
-  <rect x="480" y="140" width="120" height="36" rx="6" fill="#f1efe6" stroke="#e4e1d6" stroke-width="1"/>
-  <text x="540" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Text</text>
+  <line x1="600" y1="582" x2="600" y2="618" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
 
-  <rect x="690" y="140" width="120" height="36" rx="6" fill="#f1efe6" stroke="#e4e1d6" stroke-width="1"/>
-  <text x="750" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Text</text>
+  <rect x="420" y="622" width="360" height="58" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="600" y="646" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">Human granskning</text>
+  <text x="600" y="666" text-anchor="middle" font-size="9" fill="#8c8a7c">Oenighet JEV/LLM markeras · rättningar sparas</text>
 
-  <rect x="900" y="140" width="120" height="36" rx="6" fill="#f1efe6" stroke="#e4e1d6" stroke-width="1"/>
-  <text x="960" y="163" text-anchor="middle" font-size="11" font-weight="700" fill="#555">Tabeller</text>
+  <line x1="600" y1="680" x2="600" y2="716" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
 
-  <!-- Samlingspilar från rad 2 till JEV -->
-  <line x1="120" y1="186" x2="120" y2="210" stroke="#555" stroke-width="1"/>
-  <line x1="330" y1="186" x2="330" y2="210" stroke="#555" stroke-width="1"/>
-  <line x1="540" y1="186" x2="540" y2="210" stroke="#555" stroke-width="1"/>
-  <line x1="750" y1="186" x2="750" y2="210" stroke="#555" stroke-width="1"/>
-  <line x1="960" y1="186" x2="960" y2="210" stroke="#555" stroke-width="1"/>
-  <line x1="120" y1="210" x2="960" y2="210" stroke="#555" stroke-width="1.2"/>
-  <line x1="540" y1="210" x2="540" y2="245" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="330" y="720" width="540" height="58" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="600" y="744" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">Optimeringsloop</text>
+  <text x="600" y="764" text-anchor="middle" font-size="9" fill="#8c8a7c">Efter 1000 granskade fall → optimera JEV och LLM utifrån rättningarna</text>
 
-  <!-- ===== RAD 3: JEV ===== -->
-  <rect x="330" y="250" width="420" height="70" rx="12" fill="url(#headerGrad)" stroke="#2f6f4f" stroke-width="2"/>
-  <text x="540" y="278" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">JEV — Bedömning &amp; Mappning</text>
-  <text x="540" y="298" text-anchor="middle" font-size="10" fill="#e7f1ea">Avgör registertillhörighet → Mappar med fördefinierad variabelmappning</text>
+  <!-- Återkoppling -->
+  <path d="M 330 749 L 170 749 L 170 317 L 226 317" fill="none" stroke="#8c8a7c" stroke-width="1.2" stroke-dasharray="6,3" marker-end="url(#arrow)"/>
+  <text x="158" y="560" text-anchor="middle" font-size="9" fill="#8c8a7c" transform="rotate(-90, 158, 560)">Återkoppling</text>
 
-  <!-- Pil från JEV till RIKS-HIA -->
-  <line x1="540" y1="320" x2="540" y2="365" stroke="#2f6f4f" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
-
-  <!-- ===== RAD 4: RIKS-HIA ===== -->
-  <text x="600" y="355" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">PRELIMINÄR REGISTRERING</text>
-
-  <rect x="370" y="370" width="340" height="55" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="540" y="393" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">RIKS-HIA</text>
-  <text x="540" y="412" text-anchor="middle" font-size="9" fill="#8c8a7c">Hjärtinfarktregistret</text>
-
-  <!-- Pil från RIKS-HIA till split -->
-  <line x1="540" y1="425" x2="540" y2="460" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-
-  <!-- ===== RAD 5: Konfidensbedömning ===== -->
-  <text x="600" y="450" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">KONFIDENSBEDÖMNING</text>
-
-  <!-- 100% → Databas -->
-  <rect x="100" y="465" width="280" height="55" rx="8" fill="#e7f1ea" stroke="#2f6f4f" stroke-width="1.5"/>
-  <text x="240" y="488" text-anchor="middle" font-size="12" font-weight="700" fill="#2f6f4f">100 % konfidens</text>
-  <text x="240" y="507" text-anchor="middle" font-size="9" fill="#2f6f4f">Direkt till databas</text>
-
-  <!-- <100% → LLM -->
-  <rect x="700" y="465" width="280" height="55" rx="8" fill="#fff6e0" stroke="#9a6a00" stroke-width="1.5"/>
-  <text x="840" y="488" text-anchor="middle" font-size="12" font-weight="700" fill="#9a6a00">&lt; 100 % konfidens</text>
-  <text x="840" y="507" text-anchor="middle" font-size="9" fill="#9a6a00">Till LLM-granskning</text>
-
-  <!-- Pilar från RIKS-HIA till split -->
-  <line x1="540" y1="460" x2="240" y2="465" stroke="#2f6f4f" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
-  <line x1="540" y1="460" x2="840" y2="465" stroke="#9a6a00" stroke-width="1.2" marker-end="url(#arrow-warn)"/>
-
-  <!-- Pil 100% → Databas -->
-  <line x1="240" y1="520" x2="240" y2="555" stroke="#2f6f4f" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
-
-  <!-- Databas -->
-  <rect x="100" y="560" width="280" height="45" rx="8" fill="#2f6f4f" stroke="#1e5a3a" stroke-width="1.5"/>
-  <text x="240" y="580" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Databas</text>
-  <text x="240" y="596" text-anchor="middle" font-size="9" fill="#e7f1ea">Kvalitetsregister</text>
-
-  <!-- ===== RAD 6: LLM-granskning ===== -->
-  <line x1="840" y1="520" x2="840" y2="555" stroke="#9a6a00" stroke-width="1.2" marker-end="url(#arrow-warn)"/>
-
-  <rect x="700" y="560" width="280" height="55" rx="8" fill="#fff" stroke="#9a6a00" stroke-width="1.5"/>
-  <text x="840" y="583" text-anchor="middle" font-size="12" font-weight="700" fill="#262822">LLM-granskning</text>
-  <text x="840" y="602" text-anchor="middle" font-size="9" fill="#8c8a7c">Nemotron · Gemma</text>
-
-  <!-- Pil LLM → Databas -->
-  <line x1="840" y1="615" x2="840" y2="640" stroke="#555" stroke-width="1.2"/>
-  <line x1="840" y1="640" x2="240" y2="640" stroke="#555" stroke-width="1.2"/>
-  <line x1="240" y1="640" x2="240" y2="605" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-
-  <!-- Pil Databas → Human granskning -->
-  <line x1="240" y1="605" x2="240" y2="660" stroke="#555" stroke-width="1.2"/>
-  <line x1="240" y1="660" x2="540" y2="660" stroke="#555" stroke-width="1.2"/>
-  <line x1="540" y1="660" x2="540" y2="695" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-
-  <!-- ===== RAD 7: Human granskning ===== -->
-  <rect x="370" y="700" width="340" height="55" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="540" y="723" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">Human granskning</text>
-  <text x="540" y="742" text-anchor="middle" font-size="9" fill="#8c8a7c">Rättningar sparas</text>
-
-  <!-- Pil Human granskning → Optimeringsloop -->
-  <line x1="540" y1="755" x2="540" y2="800" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
-
-  <!-- ===== RAD 8: Optimeringsloop ===== -->
-  <rect x="270" y="805" width="540" height="55" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
-  <text x="540" y="828" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">Optimeringsloop</text>
-  <text x="540" y="847" text-anchor="middle" font-size="9" fill="#8c8a7c">Efter 1000 granskade fall → optimera JEV och LLM utifrån rättningar</text>
-
-  <!-- Feedback-pil från optimering tillbaka till JEV -->
-  <path d="M 270 832 Q 180 832 180 700 Q 180 400 180 285 Q 180 250 330 250" fill="none" stroke="#8c8a7c" stroke-width="1.2" stroke-dasharray="6,3" marker-end="url(#arrow)"/>
-  <text x="155" y="560" font-size="9" fill="#8c8a7c" transform="rotate(-90, 155, 560)">Återkoppling</text>
-
-  <!-- ===== Footer ===== -->
-  <text x="600" y="885" text-anchor="middle" font-size="9" fill="#bbb">Kvalitetsregister — Flödesschema för automatiserad mappning</text>
+  <text x="600" y="805" text-anchor="middle" font-size="9" fill="#bbb">Kvalitetsregister — Flödesschema för automatiserad mappning</text>
 </svg>
