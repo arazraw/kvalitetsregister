@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 950" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#555"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2f6f4f"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#c2410c"/>
+    </marker>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2f6f4f"/>
+      <stop offset="100%" stop-color="#4a9a6e"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1e40af"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#9a3412"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Bakgrund -->
+  <rect width="1200" height="950" fill="#faf9f4"/>
+
+  <!-- ===== RAD 1: Kvalitetsregister (utgångspunkt) ===== -->
+  <text x="600" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#555">UTGÅNGSPUNKT: FÄRDIGA REGISTRERINGAR</text>
+
+  <rect x="350" y="50" width="500" height="60" rx="12" fill="url(#headerGrad)" stroke="#2f6f4f" stroke-width="2"/>
+  <text x="600" y="76" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Kvalitetsregister</text>
+  <text x="600" y="96" text-anchor="middle" font-size="10" fill="#e7f1ea">Färdiga registreringar gjorda av människa — t.ex. RIKS-HIA</text>
+
+  <!-- Pil från register till "För varje registrering" -->
+  <line x1="600" y1="110" x2="600" y2="145" stroke="#2f6f4f" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+
+  <!-- ===== RAD 2: Loop-indikator ===== -->
+  <rect x="400" y="150" width="400" height="36" rx="6" fill="#f1efe6" stroke="#e4e1d6" stroke-width="1"/>
+  <text x="600" y="173" text-anchor="middle" font-size="11" font-weight="700" fill="#555">För varje registrering i kvalitetsregistret</text>
+
+  <!-- Pil nedåt -->
+  <line x1="600" y1="186" x2="600" y2="220" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+  <!-- ===== RAD 3: LLM-generering av syntetiska journaler ===== -->
+  <text x="600" y="210" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">STEG 1: GENERERA SYNTETISKA JOURNALER</text>
+
+  <!-- Tre LLM-modeller -->
+  <rect x="60" y="230" width="320" height="80" rx="10" fill="#fff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="220" y="255" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb">LLM Modell A</text>
+  <text x="220" y="273" text-anchor="middle" font-size="9" fill="#8c8a7c">Läser registerdata →</text>
+  <text x="220" y="288" text-anchor="middle" font-size="9" fill="#8c8a7c">Skapar syntetisk journalanteckning</text>
+  <text x="220" y="303" text-anchor="middle" font-size="9" fill="#8c8a7c">(realistisk, alla journaldelar)</text>
+
+  <rect x="440" y="230" width="320" height="80" rx="10" fill="#fff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="600" y="255" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb">LLM Modell B</text>
+  <text x="600" y="273" text-anchor="middle" font-size="9" fill="#8c8a7c">Läser registerdata →</text>
+  <text x="600" y="288" text-anchor="middle" font-size="9" fill="#8c8a7c">Skapar syntetisk journalanteckning</text>
+  <text x="600" y="303" text-anchor="middle" font-size="9" fill="#8c8a7c">(realistisk, alla journaldelar)</text>
+
+  <rect x="820" y="230" width="320" height="80" rx="10" fill="#fff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="980" y="255" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb">LLM Modell C</text>
+  <text x="980" y="273" text-anchor="middle" font-size="9" fill="#8c8a7c">Läser registerdata →</text>
+  <text x="980" y="288" text-anchor="middle" font-size="9" fill="#8c8a7c">Skapar syntetisk journalanteckning</text>
+  <text x="980" y="303" text-anchor="middle" font-size="9" fill="#8c8a7c">(realistisk, alla journaldelar)</text>
+
+  <!-- Pilar från register till de tre LLM:erna -->
+  <path d="M 600 110 Q 600 130 220 130 Q 220 180 220 230" fill="none" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+  <line x1="600" y1="186" x2="600" y2="230" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+  <path d="M 600 110 Q 600 130 980 130 Q 980 180 980 230" fill="none" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Etikett: tre modeller för varians -->
+  <text x="600" y="335" text-anchor="middle" font-size="9" fill="#8c8a7c">Tre olika språkmodeller för att fånga varians i journaltext</text>
+  <text x="600" y="349" text-anchor="middle" font-size="9" fill="#8c8a7c">Journalerna innehåller medvetna tvetydigheter — men har alltid ett rätt svar</text>
+
+  <!-- Samlingspilar från LLM:er till syntetiska journaler -->
+  <line x1="220" y1="310" x2="220" y2="355" stroke="#2563eb" stroke-width="1"/>
+  <line x1="600" y1="310" x2="600" y2="355" stroke="#2563eb" stroke-width="1"/>
+  <line x1="980" y1="310" x2="980" y2="355" stroke="#2563eb" stroke-width="1"/>
+  <line x1="220" y1="355" x2="980" y2="355" stroke="#2563eb" stroke-width="1.2"/>
+  <line x1="600" y1="355" x2="600" y2="390" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+
+  <!-- ===== RAD 4: Syntetiska journaler ===== -->
+  <text x="600" y="380" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">RESULTAT: SYNTETISKA JOURNALER</text>
+
+  <rect x="250" y="395" width="700" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="600" y="416" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">3 syntetiska journalanteckningar per registrering</text>
+  <text x="600" y="434" text-anchor="middle" font-size="9" fill="#3b82f6">Journal · Labprover · Röntgen/Bild · Patientmetadata · Läkemedel</text>
+
+  <!-- Pil till steg 2 -->
+  <line x1="600" y1="445" x2="600" y2="485" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+  <!-- ===== RAD 5: Återmappning med JEV + LLM ===== -->
+  <text x="600" y="475" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">STEG 2: ÅTERMAPPA TILL KVALITETSREGISTER</text>
+
+  <!-- JEV -->
+  <rect x="100" y="495" width="400" height="65" rx="10" fill="url(#headerGrad)" stroke="#2f6f4f" stroke-width="2"/>
+  <text x="300" y="520" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">JEV — Variabelmappning</text>
+  <text x="300" y="540" text-anchor="middle" font-size="9" fill="#e7f1ea">Mappar syntetisk journal → registervariabler</text>
+  <text x="300" y="553" text-anchor="middle" font-size="9" fill="#e7f1ea">med kalibrerad konfidens</text>
+
+  <!-- LLM -->
+  <rect x="700" y="495" width="400" height="65" rx="10" fill="url(#blueGrad)" stroke="#1e40af" stroke-width="2"/>
+  <text x="900" y="520" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">LLM — Variabelmappning</text>
+  <text x="900" y="540" text-anchor="middle" font-size="9" fill="#dbeafe">Mappar syntetisk journal → registervariabler</text>
+  <text x="900" y="553" text-anchor="middle" font-size="9" fill="#dbeafe">som komplement till JEV</text>
+
+  <!-- Pilar från syntetiska journaler till JEV och LLM -->
+  <line x1="600" y1="485" x2="300" y2="495" stroke="#2f6f4f" stroke-width="1.2" marker-end="url(#arrow-green)"/>
+  <line x1="600" y1="485" x2="900" y2="495" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Pilar från JEV och LLM till jämförelse -->
+  <line x1="300" y1="560" x2="300" y2="600" stroke="#2f6f4f" stroke-width="1.2"/>
+  <line x1="900" y1="560" x2="900" y2="600" stroke="#2563eb" stroke-width="1.2"/>
+  <line x1="300" y1="600" x2="900" y2="600" stroke="#555" stroke-width="1.2"/>
+  <line x1="600" y1="600" x2="600" y2="635" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ===== RAD 6: Jämförelse med ursprung ===== -->
+  <text x="600" y="625" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">STEG 3: JÄMFÖRELSE MED URSPRUNG</text>
+
+  <rect x="200" y="640" width="800" height="70" rx="10" fill="#fff" stroke="#c2410c" stroke-width="1.5"/>
+  <text x="600" y="663" text-anchor="middle" font-size="13" font-weight="700" fill="#c2410c">Validering — Hur väl stämmer återmappningen?</text>
+  <text x="600" y="683" text-anchor="middle" font-size="10" fill="#8c8a7c">Jämför JEV:s och LLM:ns mappade variabler med ursprungliga registervärden</text>
+  <text x="600" y="699" text-anchor="middle" font-size="10" fill="#8c8a7c">Mät precision, recall, F1 per variabel och per modell</text>
+
+  <!-- Pil till resultat -->
+  <line x1="600" y1="710" x2="600" y2="750" stroke="#c2410c" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+
+  <!-- ===== RAD 7: Resultat ===== -->
+  <text x="600" y="740" text-anchor="middle" font-size="11" font-weight="700" fill="#8c8a7c">OPTIMERING AV DATAEXTRAKTION</text>
+
+  <rect x="150" y="755" width="900" height="65" rx="8" fill="#fff" stroke="#e4e1d6" stroke-width="1.5"/>
+  <text x="600" y="780" text-anchor="middle" font-size="13" font-weight="700" fill="#262822">Utvärdera vilka variabler som mappas korrekt och vilka som mappas inkorrekt</text>
+  <text x="600" y="800" text-anchor="middle" font-size="10" fill="#8c8a7c">Identifiera mönster i felmappningar → Optimera hur JEV och LLM används i pipeline</text>
+
+  <!-- Pil till resultatbox -->
+  <line x1="600" y1="750" x2="600" y2="755" stroke="#c2410c" stroke-width="1.2" marker-end="url(#arrow-orange)"/>
+
+  
+
+  <!-- ===== Footer ===== -->
+  <text x="600" y="935" text-anchor="middle" font-size="9" fill="#bbb">Kvalitetsregister — Syntetisk journalgenerering &amp; återmappning för validering</text>
+</svg>
