@@ -236,7 +236,7 @@ function buildRikshiaSpec(){
       aiItem("rh.frailty", "Skörhet", "FRAILTY",
         ["Mycket vital","Vital","Klarar sig bra","Sårbar","Lindrigt skör","Måttligt skör","Allvarligt skör","Mycket allvarligt skör","Terminalt sjuk","Okänt"]),
       aiItem("rh.previous_mi", "Tidigare hjärtinfarkt", "PREVIOUS_MI", ["Nej","Ja","Okänt"]),
-      aiItem("rh.history_chf", "Känd nedsatt vänsterkammarfunktion", "HISTORY_OF_CHF",
+      aiItem("rh.history_chf", "Känd nedsatt vänsterkammarfunktion (sedan tidigare)", "HISTORY_OF_CHF",
         ["Nej","Ja, Normalt (>=50%)","Ja, Lätt nedsatt (40-49%)","Ja, Måttligt nedsatt (30-39%)","Kraftigt nedsatt (<30%)","Ja, men okänd grad","Okänt"]),
       aiItem("rh.previous_pci", "Tidigare PCI", "PREVIOUS_PCI", ["Nej","Ja","Okänt"]),
       aiItem("rh.prior_surgery", "Tidigare hjärtkirurgi", "PRIOR_CARDIAC_SURGERY", ["Nej","CABG","Annan hjärtkirurgi","Okänt"]),
@@ -364,7 +364,24 @@ function buildRikshiaSpec(){
   ];
 }
 
-function collectAiItems(sections){ return sections.flatMap(s => s.items).filter(i => i.kind === "ai"); }
+// Time frame per section, sent to Jev with every question. Without it, e.g.
+// "ASA (ASPIRIN_REG)" and "ASA (ASPIRIN_DISCHARGE)" read as the same question and
+// Jev answers with whatever was given at any point during the stay.
+const SECTION_CONTEXT = {
+  "Anamnes & riskfaktorer": "Anamnes FÖRE aktuellt insjuknande — endast sjukdomar och förhållanden kända innan denna vårdepisod; fynd som upptäcks under vårdtiden räknas inte",
+  "Läkemedel vid inskrivning": "Patientens stående medicinering FÖRE aktuellt insjuknande — läkemedel som gavs prehospitalt, på akuten, vid PCI eller som sattes in under vårdtiden räknas inte",
+  "Vid ankomst — status & EKG": "Status och EKG VID ANKOMST till sjukhuset — första EKG och första status, inte senare EKG eller fynd under vårdtiden",
+  "Reperfusion & läkemedel under vårdtiden": "UNDER VÅRDTIDEN, från ankomst till utskrivning",
+  "Vänsterkammarfunktion & komplikationer": "UNDER VÅRDTIDEN, från ankomst till utskrivning",
+  "Diagnos vid utskrivning": "Bedömning VID UTSKRIVNING för aktuellt vårdtillfälle",
+  "Utskrivningsläkemedel": "Läkemedel som patienten har VID UTSKRIVNING",
+  "Uppföljning & övrigt": "VID UTSKRIVNING och planering efter utskrivning"
+};
+
+function collectAiItems(sections){
+  sections.forEach(s => s.items.forEach(i => { i.context = SECTION_CONTEXT[s.title] || s.title; }));
+  return sections.flatMap(s => s.items).filter(i => i.kind === "ai");
+}
 
 // The one real "Mappa med Jev" call: sends the full source text + the field list to
 // our serverless proxy, which calls Jev (OpenRouter Decisions API) server-side.
@@ -383,7 +400,7 @@ async function mapRegister(){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         journalText: fullSourceText(),
-        fields: aiItems.map(i => ({ key: i.key, label: `${i.label} (${i.varname})`, options: i.options }))
+        fields: aiItems.map(i => ({ key: i.key, label: `${i.context}: ${i.label} (${i.varname})`, options: i.options }))
       })
     });
     const data = await resp.json();
