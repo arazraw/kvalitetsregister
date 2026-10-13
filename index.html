@@ -86,6 +86,12 @@
   .field-row .fconf .conf-label{font-size:.7rem;color:var(--muted);}
   .field-row .finfo{flex:0 0 18px;color:var(--muted);font-size:.9rem;cursor:help;text-align:center;}
   .field-row .fcheck{flex:0 0 18px;color:var(--good);font-size:.95rem;text-align:center;}
+  .field-row.wrong{border-color:#d93025;background:#fdecea;}
+  .field-row.wrong .fvalue select{border-color:#d93025;color:#9c1c12;font-weight:700;}
+  .field-row.wrong .fcheck{color:#d93025;font-weight:700;}
+  .field-row .facit{display:block;font-size:.72rem;color:#9c1c12;font-weight:700;margin-top:.2rem;}
+  .grade-summary{display:flex;align-items:center;gap:.5rem;border-radius:9px;padding:.5rem .7rem;font-size:.8rem;font-weight:700;margin-bottom:.9rem;background:#fdecea;color:#9c1c12;}
+  .grade-summary.allok{background:var(--good-soft);color:var(--good);}
   .loading-note{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--muted);padding:1rem 0;}
   .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -247,11 +253,181 @@ const P2_LABB = [
   { vd: 2, name: "HbA1c", sub: "B-HbA1c", time: "2026-10-03 06:00", value: "62 mmol/mol", high: true }
 ];
 
+// Facit (rätt svar) per AI-fält, satt manuellt utifrån journaltexten. Används bara
+// av knappen "Rätta" efter mappning — skickas aldrig till Jev.
+const P1_FACIT = {
+  "rh.occupation": "Arbete",
+  "rh.smoking": "Rökare",
+  "rh.ecig": "Aldrig använt",
+  "rh.snus": "Snusare",
+  "rh.frailty": "Vital",
+  "rh.previous_mi": "Nej",
+  "rh.history_chf": "Nej",
+  "rh.previous_pci": "Nej",
+  "rh.prior_surgery": "Nej",
+  "rh.diabetes": "Nej",
+  "rh.hypertension": "Ja",
+  "rh.previous_stroke": "Nej",
+  "rh.previous_afib": "Nej",
+  "rh.previous_kol": "Nej",
+  "rh.ace_reg": "Ja",
+  "rh.arb_reg": "Nej",
+  "rh.oac_reg": "Nej",
+  "rh.antiplatelet_reg": "Nej",
+  "rh.asa_reg": "Nej",
+  "rh.bb_reg": "Nej",
+  "rh.cc_reg": "Nej",
+  "rh.statin_reg": "Nej",
+  "rh.diuretic_reg": "Nej",
+  "rh.nitrate_reg": "Nej",
+  "rh.ecg_rhythm": "Sinus",
+  "rh.ecg_qrs": "Normalt",
+  "rh.ecg_stt": "ST-höjning",
+  "rh.rales": "Nej",
+  "rh.shock_admission": "Nej",
+  "rh.presenting_symptoms": "Bröstsmärta",
+  "rh.ambulance": "Ja till HIA/PCI-lab",
+  "rh.cpr_before": "Nej",
+  "rh.thromb_before": "Nej",
+  "rh.prehosp_ecg_reper": "Ja",
+  "rh.repertreatment": "Primär PCI",
+  "rh.anticoag_treat": "iv Heparin",
+  "rh.bivalirudin": "Nej",
+  "rh.gp_hämmare": "Nej",
+  "rh.bb_treat": "Ja, per oralt",
+  "rh.diuretic_treat": "Nej",
+  "rh.inotropes": "Nej",
+  "rh.nitrate_treat": "Nej",
+  "rh.stresstest": "Ej utfört",
+  "rh.ef_obtained_by": "Ekocardiografi",
+  "rh.lvef": "Lätt nedsatt (40-49%)",
+  "rh.cabg": "Nej",
+  "rh.devices": "Nej",
+  "rh.cpap": "Nej",
+  "rh.reinfarct": "Nej",
+  "rh.bleeding": "Nej",
+  "rh.resusc": "Nej",
+  "rh.shock_hospital": "Nej",
+  "rh.mech_circ": "Nej",
+  "rh.av_block": "Nej / AV-I",
+  "rh.new_afib": "Nej",
+  "rh.mech_comp": "Nej",
+  "rh.infarct_type": "STEMI",
+  "rh.infarct_class": "Typ-1",
+  "rh.minoca": "Nej",
+  "rh.scad": "Nej",
+  "rh.death": "Nej",
+  "rh.other_disease": "Nej",
+  "rh.asa_dc": "Ja",
+  "rh.antiplatelet_dc": "Ticagrelor (Brilique)",
+  "rh.statin_dc": "Ja",
+  "rh.bb_dc": "Ja",
+  "rh.ace_dc": "Ja",
+  "rh.arb_dc": "Nej",
+  "rh.oac_dc": "Nej",
+  "rh.cc_dc": "Nej",
+  "rh.diuretic_dc": "Nej",
+  "rh.nitrate_dc": "Nej",
+  "rh.followup": "Kardiologi/Medicin",
+  "rh.planned_angio": "Nej",
+  "rh.planned_pci": "Nej",
+  "rh.planned_cabg": "Nej",
+  "rh.trial": "Nej",
+  "rh.biobank": "Ja",
+  "rh.covid_infection": "Nej",
+  "rh.covid_test": "Inte tagit",
+  "rh.flu_vaccine": "Nej, har fått vaccin under pågående influensasäsong"
+};
+
+const P2_FACIT = {
+  "rh.occupation": "Ålderspensionär",
+  "rh.smoking": "Ex-rökare > 1 månad",
+  "rh.ecig": "Aldrig använt",
+  "rh.snus": "Aldrig varit snusare",
+  "rh.frailty": "Klarar sig bra",
+  "rh.previous_mi": "Ja",
+  "rh.history_chf": "Nej",
+  "rh.previous_pci": "Ja",
+  "rh.prior_surgery": "Nej",
+  "rh.diabetes": "Ja",
+  "rh.hypertension": "Ja",
+  "rh.previous_stroke": "Nej",
+  "rh.previous_afib": "Nej",
+  "rh.previous_kol": "Nej",
+  "rh.ace_reg": "Nej",
+  "rh.arb_reg": "Ja",
+  "rh.oac_reg": "Nej",
+  "rh.antiplatelet_reg": "Nej",
+  "rh.asa_reg": "Ja",
+  "rh.bb_reg": "Ja",
+  "rh.cc_reg": "Ja",
+  "rh.statin_reg": "Ja",
+  "rh.diuretic_reg": "Nej",
+  "rh.nitrate_reg": "Nej",
+  "rh.ecg_rhythm": "Sinus",
+  "rh.ecg_qrs": "Normalt",
+  "rh.ecg_stt": "ST-sänkning",
+  "rh.rales": "Basala rassel",
+  "rh.shock_admission": "Nej",
+  "rh.presenting_symptoms": "Dyspne",
+  "rh.ambulance": "Ja till akuten",
+  "rh.cpr_before": "Nej",
+  "rh.thromb_before": "Nej",
+  "rh.prehosp_ecg_reper": "Nej",
+  "rh.repertreatment": "Nej",
+  "rh.anticoag_treat": "iv Heparin",
+  "rh.bivalirudin": "Nej",
+  "rh.gp_hämmare": "Nej",
+  "rh.bb_treat": "Ja, iv",
+  "rh.diuretic_treat": "Ja",
+  "rh.inotropes": "Nej",
+  "rh.nitrate_treat": "Ja",
+  "rh.stresstest": "Ej utfört",
+  "rh.ef_obtained_by": "Ekocardiografi",
+  "rh.lvef": "Lätt nedsatt (40-49%)",
+  "rh.cabg": "Nej",
+  "rh.devices": "Nej",
+  "rh.cpap": "Ja",
+  "rh.reinfarct": "Nej",
+  "rh.bleeding": "Nej",
+  "rh.resusc": "Nej",
+  "rh.shock_hospital": "Nej",
+  "rh.mech_circ": "Nej",
+  "rh.av_block": "Nej / AV-I",
+  "rh.new_afib": "Ja",
+  "rh.mech_comp": "Nej",
+  "rh.infarct_type": "NSTEMI",
+  "rh.infarct_class": "Typ-1",
+  "rh.minoca": "Nej",
+  "rh.scad": "Nej",
+  "rh.death": "Nej",
+  "rh.other_disease": "Nej",
+  "rh.asa_dc": "Ja",
+  "rh.antiplatelet_dc": "Clopidogrel (Plavix)",
+  "rh.statin_dc": "Ja",
+  "rh.bb_dc": "Ja",
+  "rh.ace_dc": "Nej",
+  "rh.arb_dc": "Ja",
+  "rh.oac_dc": "Apixaban (Eliquis)",
+  "rh.cc_dc": "Nej",
+  "rh.diuretic_dc": "Ja",
+  "rh.nitrate_dc": "Nej",
+  "rh.followup": "Kardiologi/Medicin",
+  "rh.planned_angio": "Nej",
+  "rh.planned_pci": "Nej",
+  "rh.planned_cabg": "Nej",
+  "rh.trial": "Ja",
+  "rh.biobank": "Nej",
+  "rh.covid_infection": "Nej",
+  "rh.covid_test": "Negativt test",
+  "rh.flu_vaccine": "Nej, har avböjt erbjudande om vaccination"
+};
+
 const PATIENTS = [
   { id: "dahl", summary: "ST-höjningsinfarkt (STEMI), akut PCI LAD",
-    patient: P1_PATIENT, journal: P1_JOURNAL, imaging: P1_IMAGING, labb: P1_LABB },
+    patient: P1_PATIENT, journal: P1_JOURNAL, imaging: P1_IMAGING, labb: P1_LABB, facit: P1_FACIT },
   { id: "lindqvist", summary: "Icke ST-höjningsinfarkt (NSTEMI), PCI OM1",
-    patient: P2_PATIENT, journal: P2_JOURNAL, imaging: P2_IMAGING, labb: P2_LABB }
+    patient: P2_PATIENT, journal: P2_JOURNAL, imaging: P2_IMAGING, labb: P2_LABB, facit: P2_FACIT }
 ];
 
 
@@ -262,7 +438,8 @@ const PATIENTS = [
 const status = {};
 const mappedFields = {};
 const mapError = {};
-PATIENTS.forEach(p => { status[p.id] = "ej"; mappedFields[p.id] = null; mapError[p.id] = null; });
+const graded = {};
+PATIENTS.forEach(p => { status[p.id] = "ej"; mappedFields[p.id] = null; mapError[p.id] = null; graded[p.id] = false; });
 
 let currentId = PATIENTS[0].id;
 let PATIENT, JOURNAL, IMAGING, LABB;
@@ -465,6 +642,7 @@ async function mapRegister(){
   const id = currentId;
   status[id] = "laddar";
   mapError[id] = null;
+  graded[id] = false;
   renderPatientList();
   renderRegister();
 
@@ -603,6 +781,8 @@ function probTooltip(it){
 function renderRegister(){
   const mapped = status[currentId] === "klar";
   const loading = status[currentId] === "laddar";
+  const isGraded = mapped && graded[currentId];
+  const facit = PATIENTS.find(p => p.id === currentId).facit;
   const card = document.getElementById("register-card");
 
   let html = `
@@ -613,6 +793,7 @@ function renderRegister(){
       </div>
       <div class="reg-actions">
         <button class="btn" id="map-btn" ${loading ? "disabled" : ""}>${mapped ? "↻ Mappa om" : "✨ Mappa till RIKS-HIA"}</button>
+        <button class="btn" id="grade-btn" ${mapped ? "" : "disabled"}>${isGraded ? "✕ Dölj rättning" : "✔ Rätta"}</button>
         <button class="btn primary" id="export-btn" ${mapped ? "" : "disabled"}>⬇ Exportera</button>
       </div>
     </div>`;
@@ -625,23 +806,33 @@ function renderRegister(){
   } else if (!mapped) {
     html += `<div class="empty-hint">Klicka <strong>Mappa med Jev</strong> för att låta Jev läsa journalen (${new Set(JOURNAL.map(n => n.vd)).size} vårddygn) och bilddiagnostiken och fylla i RIKS-HIA-registreringen.</div>`;
   } else {
-    html += `<div class="banner-ok">✅ Alla fält godkända – redo för export</div>`;
+    if (isGraded) {
+      const ai = mappedFields[currentId].flatMap(s => s.items).filter(i => i.kind === "ai");
+      const wrong = ai.filter(i => i.value !== facit[i.key]).length;
+      html += wrong
+        ? `<div class="grade-summary">✗ Rättning mot facit: ${ai.length - wrong} av ${ai.length} AI-fält rätt — ${wrong} felmappade fält markerade i rött</div>`
+        : `<div class="grade-summary allok">✓ Rättning mot facit: alla ${ai.length} AI-fält rätt</div>`;
+    } else {
+      html += `<div class="banner-ok">✅ Alla fält godkända – redo för export</div>`;
+    }
     mappedFields[currentId].forEach(sec => {
       html += `<div class="field-section"><h3>${sec.title}</h3>`;
       sec.items.forEach(it => {
         const valueHtml = it.options
-          ? `<select>${it.options.map(o => `<option ${o === it.value ? "selected" : ""}>${o}</option>`).join("")}</select>`
+          ? `<select ${it.kind === "ai" ? `data-key="${it.key}"` : ""}>${it.options.map(o => `<option ${o === it.value ? "selected" : ""}>${o}</option>`).join("")}</select>`
           : `<input value="${it.value ?? ""}" />`;
         const confHtml = it.kind === "struct"
           ? `<span class="struct-label">strukturerad</span>`
           : `<div class="bar-track"><div class="bar-fill" style="width:${it.conf}%"></div></div><span class="conf-label">${it.conf}% säker</span>`;
         const infoHtml = it.kind === "ai" ? `<span class="finfo" title="${probTooltip(it).replace(/"/g, '&quot;')}">💬</span>` : `<span class="finfo"></span>`;
-        html += `<div class="field-row">
-          <div class="flabel-col"><span class="flabel">${it.label}</span><span class="fsource">${it.source} · ${it.varname}</span></div>
+        const isWrong = isGraded && it.kind === "ai" && it.value !== facit[it.key];
+        const facitHtml = isWrong ? `<span class="facit">Facit: ${facit[it.key]}</span>` : "";
+        html += `<div class="field-row ${isWrong ? "wrong" : ""}">
+          <div class="flabel-col"><span class="flabel">${it.label}</span><span class="fsource">${it.source} · ${it.varname}</span>${facitHtml}</div>
           <div class="fvalue">${valueHtml}</div>
           <div class="fconf">${confHtml}</div>
           ${infoHtml}
-          <div class="fcheck">✓</div>
+          <div class="fcheck">${isWrong ? "✗" : "✓"}</div>
         </div>`;
       });
       html += `</div>`;
@@ -651,6 +842,16 @@ function renderRegister(){
   card.innerHTML = html;
 
   document.getElementById("map-btn").addEventListener("click", mapRegister);
+  // A human correction in a dropdown updates the value, so a later "Rätta" grades the corrected value.
+  card.querySelectorAll("select[data-key]").forEach(sel => sel.addEventListener("change", () => {
+    const it = mappedFields[currentId].flatMap(s => s.items).find(i => i.key === sel.dataset.key);
+    it.value = sel.value;
+    if (graded[currentId]) renderRegister();
+  }));
+  document.getElementById("grade-btn").addEventListener("click", () => {
+    graded[currentId] = !graded[currentId];
+    renderRegister();
+  });
 
   const exportBtn = document.getElementById("export-btn");
   if (exportBtn) {
